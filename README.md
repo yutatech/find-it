@@ -1,7 +1,7 @@
 # find-it
 
 ## Contributors
-- 藤山優太
+- Fujiyama Yuta / 藤山優太
 - 
 - 
 - 
