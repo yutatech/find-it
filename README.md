@@ -3,7 +3,7 @@
 ## Contributors
 - 藤山優太
 - 
-- 山本陽奈子
+- Yamamoto Hinako / 山本陽奈子
 - 
 - 
 - 
