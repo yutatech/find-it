@@ -2,7 +2,7 @@
 
 ## Contributors
 - 藤山優太
-- 小泉桃子
+- Koizumi Momoko / 小泉桃子
 - 
 - 
 - 
