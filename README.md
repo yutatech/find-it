@@ -4,7 +4,7 @@
 - 藤山優太
 - 
 - 
-- Kitamura Shingo (北村晨悟)
+- Kitamura Shingo / 北村晨悟
 - 
 - 
 - 
