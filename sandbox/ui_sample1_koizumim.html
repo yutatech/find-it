@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>ページタイトル</title>
+	<style>
+		/* CSSを書くところ */
+		h1 {
+			color: blue;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- 実際に表示される領域 -->
+	<h1>Hello Html</h1>
+	<script>
+		// JavaScriptを書くところ
+		console.log("Hello JavaScript");
+	</script>
+    <input id="input">
+    <button onclick="clicked();">ボタン</button>
+    <div id="output"></div>
+    
+    <input id="input">
+<div id="output"></div>
+
+<script>
+	const input = document.getElementById("input");
+	input.addEventListener("keydown", (event) => {
+		console.log(event);
+		if (event.code === "Enter") {
+			const output = document.getElementById("output");
+			output.innerHTML += `<b>${input.value}</b><br>`;
+			input.value = "";
+		}
+	})
+</script>
+<input type="file" onChange="readFile(this.files);">
+<div id="output"></div>
+<script>
+	const output = document.getElementById("output");
+	function readFile(files) {
+		if (files.length === 0) return;
+		const file = files[0];
+		console.log(file.type)
+		const reader = new FileReader();
+		if (file.type.match("text.*")) {
+			reader.onload = (event) => { output.innerHTML = `<xmp>${event.target.result}</xmp>`; }
+			reader.readAsText(file, "utf-8");
+		} else if (file.type.match("image.*")) {
+			reader.onload = (event) => { output.innerHTML = `<img src="${event.target.result}" width="500">`; }
+			reader.readAsDataURL(file);
+		} else if (file.type.match("audio.*")) {
+			reader.onload = (event) => { output.innerHTML = `<audio controls src="${event.target.result}"></audio>`; }
+			reader.readAsDataURL(file);
+		} else if (file.type.match("video.*")) {
+			reader.onload = (event) => { output.innerHTML = `<video controls src="${event.target.result}" width="500"></video>`; }
+			reader.readAsDataURL(file);
+		}
+	}
+</script>
+
+    
+</body>
+
+</html>
