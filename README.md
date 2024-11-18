@@ -3,7 +3,7 @@
 ## Contributors
 - Fujiyama Yuta / 藤山優太
 - Koizumi Momoko / 小泉桃子
-- 
+- Yamamoto Hinako / 山本陽奈子
 - Koizumi Jigen / 小泉慈元
 - 
 - Ishii Ryotaro / 石井崚太郎
