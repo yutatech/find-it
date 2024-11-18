@@ -6,5 +6,5 @@
 - 
 - Koizumi Jigen / 小泉慈元
 - 
-- 
+- Ishii Ryotaro / 石井崚太郎
 - Ishii Ryohei / 石井遼平
