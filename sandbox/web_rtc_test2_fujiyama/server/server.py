@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+
+
 class FastApiServer:
 
     def __init__(self, allow_origins: list[str]):
@@ -20,107 +21,147 @@ class FastApiServer:
         )
 
 
-import cv2
-from aiortc import MediaStreamTrack
+from socketio import AsyncServer, ASGIApp
+
+
+class SocketServer:
+
+    def __init__(self, allow_origins: list[str]):
+        # Socket.IOサーバーの設定
+        self.sio = AsyncServer(
+            async_mode="asgi",
+            cors_allowed_origins=allow_origins,
+        )
+
+    def set_handlers(self, app: FastAPI):
+        app.mount("/", ASGIApp(self.sio))
+
+
+from aiortc import RTCPeerConnection, RTCSessionDescription, RTCIceCandidate, RTCConfiguration, RTCIceServer
 from aiortc.rtcrtpreceiver import RemoteStreamTrack
-class VideoTransformTrack(MediaStreamTrack):
-    """
-    A video stream track that transforms frames from an another track.
-    """
-
-    from av.frame import Frame
-    from av.video.reformatter import VideoReformatter
-    kind = "video"
-
-    def __init__(self, track: RemoteStreamTrack):
-        super().__init__()  # don't forget this!
-        self.track: RemoteStreamTrack = track
-
-    async def recv(self):
-        print("recv")
-        frame: self.Frame = await self.track.recv()
-        print("recv comp")
-        # frame = self.VideoReformatter.reformat(frame, format="yuv420p", src_colorspace="bgr24", dst_colorspace="bgr24")
-        # print(frame.color_space)
-        frame = frame.reformat(format="rgb24")
-        print(frame)
-
-        # OpenCVで画像を表示
-        img = frame.to_ndarray(format="bgr24")
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        cv2.imshow("Received Video", img)
-        cv2.waitKey(1)  # OpenCVでフレーム表示を更新
-        # print("saigo")
-        return frame
-
-
-from aiortc import RTCPeerConnection, RTCSessionDescription
-from aiortc.contrib.media import MediaRelay
+from socketio import AsyncServer
+import asyncio
 
 
 class WebRtcServer:
+
     def __init__(self):
-        self.pcs = set()
+        self.pcs = {}
+        self.sio = None
 
-    def set_handlers(self, app: FastAPI):
+    def set_handlers(self, sio: AsyncServer):
+        self.sio = sio
 
-        @app.post("/offer")
-        async def on_offer(offer: dict):
-            return await self.handle_offer(offer)
+        @sio.on("offer")
+        async def on_offer(sid, offer: dict):
+            print('on_offer')
+            answer = await self.sio_handle_offer(sid, offer)
+            await sio.emit("answer", answer, to=sid)
 
-        @app.post("/ice")
-        async def on_ice(ice: dict):
-            await self.handle_ice(ice)
+        @sio.on("ice_candidate")
+        async def on_ice(sid, ice: dict):
+            print('on_ice')
+            await self.sio_handle_ice(sid, ice)
 
-    async def handle_offer(self, data: dict):
-        print(data)
-        offer = data['offer']
-        pc = RTCPeerConnection()
-        try:
+    async def sio_handle_offer(self, sid, offer: dict):
+        pc = RTCPeerConnection(configuration=RTCConfiguration(
+            iceServers=[RTCIceServer(urls="stun:stun.l.google.com:19302")]))
 
-            @pc.on("track")
-            def handle_track(track: RemoteStreamTrack):
-                if track.kind == "video":
-                    print("Receiving video track")
-                    print(track)
+        @pc.on("signalingstatechange")
+        async def on_signalingstatechange():
+            print('Signaling state change:', pc.signalingState)
+            if pc.signalingState == 'stable':
+                print('ICE gathering complete')
 
-                    relay = MediaRelay()
-                    pc.addTrack(VideoTransformTrack(relay.subscribe(track)))
+        @pc.on('iceconnectionstatechange')
+        async def on_iceconnectionstatechange():
+            print("ICE connection state is", pc.iceConnectionState)
+            if pc.iceConnectionState == "failed":
+                print("ICE Connection has failed, attempting to restart ICE")
+                # await pc.restartIce()
 
-                @track.on("ended")
-                async def on_ended():
-                    print("Track", track.kind, "ended")
+        @pc.on('connectionstatechange')
+        async def on_connectionstatechange():
+            print('Connection state change:', pc.connectionState)
+            if pc.connectionState == 'connected':
+                print('Peers successfully connected')
 
-            # リモートのOfferをセット
-            remote_offer = RTCSessionDescription(sdp=offer['sdp'],
-                                                 type=offer['type'])
-            await pc.setRemoteDescription(remote_offer)
+        @pc.on('icegatheringstatechange')
+        async def on_icegatheringstatechange():
+            print('ICE gathering state changed to', pc.iceGatheringState)
+            if pc.iceGatheringState == 'complete':
+                print('All ICE candidates have been gathered.')
 
-            # Answerを生成
-            answer = await pc.createAnswer()
-            await pc.setLocalDescription(answer)
+        @pc.on("track")
+        async def handle_track(track: RemoteStreamTrack):
+            await self.pc_handle_track(pc, track)
 
-            self.pcs.add(pc)
-            return {"answer": answer}
-        except:
-            print("Error WebRtcServer.handle_offer(): failed to create answer")
-            await pc.close()
-            raise
+        # リモートのOfferをセット
+        await pc.setRemoteDescription(
+            RTCSessionDescription(sdp=offer['sdp'], type=offer['type']))
 
-    async def handle_ice(self, data: dict):
-        print("receive ice", data)
-        ice = data['ice']
-        # pc = self.pcs[ice['sid']]
-        # if pc is None:
-        #     print("Error WebRtcServer.handle_ice(): pc is None")
+        # Answerを生成
+        answer = await pc.createAnswer()
+        await pc.setLocalDescription(answer)
+
+        self.pcs[sid] = pc
+        return {
+            "type": pc.localDescription.type,
+            "sdp": pc.localDescription.sdp,
+        }
+
+    async def sio_handle_ice(self, sid, ice: dict):
+        # if sid not in self.pcs:
+        #     print("Error WebRtcServer.handle_ice(): unknown sid")
         #     return
-        # await pc.addIceCandidate(ice["candidate"])
+        # pc: RTCPeerConnection = self.pcs[sid]
+
+        # ip = ice['candidate'].split(' ')[4]
+        # port = ice['candidate'].split(' ')[5]
+        # protocol = ice['candidate'].split(' ')[7]
+        # priority = ice['candidate'].split(' ')[3]
+        # foundation = ice['candidate'].split(' ')[0]
+        # component = ice['candidate'].split(' ')[1]
+        # protocol_type = ice['candidate'].split(' ')[7]
+        # ice_candidate = RTCIceCandidate(ip=ip,
+        #                                 port=port,
+        #                                 protocol=protocol,
+        #                                 priority=priority,
+        #                                 foundation=foundation,
+        #                                 component=component,
+        #                                 type=protocol_type,
+        #                                 sdpMid=ice['sdpMid'],
+        #                                 sdpMLineIndex=ice['sdpMLineIndex'])
+        # await pc.addIceCandidate(ice_candidate)
+        # self.ice_candidates.append(ice_candidate)
+        await self.sio.emit("ice_candidate", ice, to=sid)
+
+    async def pc_handle_icecandidate(self, sid, pc: RTCPeerConnection,
+                                     candidate: RTCIceCandidate):
+        await self.sio.emit("ice", candidate, to=sid)
+
+    async def pc_handle_track(self, pc: RTCPeerConnection,
+                              track: RemoteStreamTrack):
+        print('on_track')
+        if track.kind == "video":
+            while True:
+                print("loop")
+                frame = await track.recv()
+                print(frame)
+                await asyncio.sleep(0.01)
+
+        @track.on("ended")
+        async def on_ended():
+            print("Track", track.kind, "ended")
 
 
 if __name__ == "__main__":
     server = FastApiServer(allow_origins=["https://yuta-air.local:3000"])
+    socket_server = SocketServer(allow_origins=["https://yuta-air.local:3000"])
+    socket_server.set_handlers(server.app)
     web_rtc_server = WebRtcServer()
-    web_rtc_server.set_handlers(server.app)
+    web_rtc_server.set_handlers(socket_server.sio)
+
     import uvicorn
     uvicorn.run(server.app,
                 host="0.0.0.0",

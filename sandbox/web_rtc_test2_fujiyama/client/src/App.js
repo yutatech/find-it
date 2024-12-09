@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import Peer from "simple-peer";
 import io from "socket.io-client";
-import { Fetch, WebSocket } from "engine.io-client";
 
 const server_url = "https://yuta-air.local:8000";
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
-  const [message, setMessage] = useState('');
   const peerConnection = useRef(null);
   const localStream = useRef(null);
-  const remoteStreamRef = useRef(null);
+  const remoteStream = useRef(null);
+  const socket = useRef(null);
+  const offer = useRef(null);
 
   useEffect(() => {
     // StartWebRTC();
@@ -19,91 +18,95 @@ function App() {
   async function StartWebRTC() {
     try {
       // カメラの取得
-      document.getElementById('log').innerText = 'waiting';
       await navigator.mediaDevices.getUserMedia({ video: { width: 360, height: 240, facingMode: 'user' }, audio: false })
         .then((stream) => {
           localStream.current = stream;
-
-          // ストリームを適切に処理
-          document.getElementById('log').innerText = 'success to get media';
         })
         .catch((error) => {
           console.error('メディアデバイスの取得エラー:', error);
-          document.getElementById('log').innerText = 'fail to get media';
         });
-
     } catch (err) {
       console.error('Error accessing media devices.', err);
     }
 
-    // try {
-    console.log('on connection create');
-    peerConnection.current = new RTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' }
-      ]
-    });
-
-    // ローカルのストリームをWebRTC接続に追加
-    localStream.current.getTracks().forEach((track) => {
-      const sender = peerConnection.current.addTrack(track, localStream.current);
-    });
-
-    peerConnection.current.oniceconnectionstatechange = (event) => {
-      console.log('oniceconnectionstatechange:', event);
-    };
-    peerConnection.current.onsignalingstatechange = (event) => {
-      console.log('onsignalingstatechange:', event);
-    };
-
-    // ICE Candidateの処理
-    peerConnection.current.onicecandidate = (event) => {
-      console.log('onicecandidate');
-      if (event.candidate) {
-        console.log('Sending ICE candidate to other peer:', event.candidate);
-        fetch(`${server_url}/ice`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            candidate: event.candidate,
-          })
-        })
-          .then(response => response.json())
-          .catch(err => {
-            console.error('Error starting connection.', err);
-          });
-      }
-    };
-
-    // オファーを作成
-    const offer = await peerConnection.current.createOffer();
-    await peerConnection.current.setLocalDescription(offer);
-    console.log('Sending offer:', offer);
-    fetch(`${server_url}/offer`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        offer: offer,
-      })
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Received answer:', data.answer);
-        peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.answer));
-
-        document.getElementById('localVideo').srcObject = localStream.current;
-      })
-      .catch((err) => {
-        console.error('Error starting connection.', err);
+    try {
+      // socket通信の確立
+      socket.current = await io(server_url, {
+        transports: ['websocket', 'polling']
       });
-    // }
-    // catch (err) {
-    //   console.error('Error creating offer.', err);
-    // }
+
+      socket.current.on('disconnect', () => {
+        console.log('Disconnected from server');
+        setIsConnected(false);
+      });
+
+      socket.current.on('answer', (data) => {
+        handleAnswer(data);
+      });
+
+      socket.current.on('ice', (data) => {
+        handleIce(data);
+      });
+    }
+    catch (err) {
+      console.error('Error creating socket connection.', err);
+    }
+
+    try {
+      // PeerConnectionの作成
+      peerConnection.current = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' }
+        ]
+      });
+
+      // ICE Candidateの送信
+      peerConnection.current.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.current.emit('ice_candidate', event.candidate);
+        }
+      };
+
+      peerConnection.current.oniceconnectionstatechange = (event) => {
+        console.log('oniceconnectionstatechange:', event);
+      };
+      peerConnection.current.onsignalingstatechange = (event) => {
+        console.log('onsignalingstatechange:', event);
+      };
+      peerConnection.current.onconnectionstatechange = (event) => {
+        console.log('onconnectionstatechange:', event);
+      };
+
+      peerConnection.current.ontrack = (event) => {
+        remoteStream.current = event.streams[0];
+      };
+
+      // LocalのTrackをWebRTC接続に追加
+      await localStream.current.getTracks().forEach((track) => {
+        peerConnection.current.addTrack(track, localStream.current);
+      });
+
+      // Offerを作成
+      offer.current = await peerConnection.current.createOffer();
+      socket.current.emit('offer', {
+        type: offer.current.type,
+        sdp: offer.current.sdp,
+      });
+    } catch (err) {
+      console.error('Error creating peer connection.', err);
+    }
+  }
+
+  async function handleAnswer(answer) {
+    await peerConnection.current.setLocalDescription(offer.current);
+    await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
+
+    document.getElementById('localVideo').srcObject = localStream.current;
+  }
+
+  async function handleIce(ice) {
+    console.log('Adding ICE candidate:', ice);
+    await peerConnection.current.addIceCandidate(new RTCIceCandidate(ice.candidate));
   }
 
   return (
