@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Peer from "simple-peer";
 import io from "socket.io-client";
+import { Fetch, WebSocket } from "engine.io-client";
 
-const server_url = "http://yuta-air.local:8000";
-
-const socket = io(server_url); // FastAPIサーバーのURL
+const server_url = "https://yuta-air.local:8000";
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
@@ -16,11 +15,15 @@ function App() {
 
   // クライアントがWebSocketでサーバーに接続する際の設定
   useEffect(() => {
+    console.log("on useEffect");
     // Socket.IOサーバーへの接続
-    socketRef.current = io(server_url); // サーバーのURL
+    socketRef.current = io(server_url, {
+      transports: ['websocket', 'polling']
+    });
 
-    socketRef.current.on('connect', () => {
-      console.log('Connected to the signaling server');
+    socketRef.current.on('disconnect', () => {
+      console.log('Disconnected from server');
+      setIsConnected(false);
     });
 
     socketRef.current.on('answer', (data) => {
@@ -65,7 +68,19 @@ function App() {
 
     // ローカルのストリームをWebRTC接続に追加
     localStreamRef.current.getTracks().forEach((track) => {
-      peerConnectionRef.current.addTrack(track, localStreamRef.current);
+      // console.log('Adding local track:', track);
+      const sender = peerConnectionRef.current.addTrack(track, localStreamRef.current);
+
+        // // フォーマットの設定
+        // const params = sender.getParameters();
+        // if (!params.encodings) {
+        //     params.encodings = [{}];
+        // }
+
+        // // 送信フォーマットの例
+        // params.encodings[0].maxBitrate = 500000; // 最大ビットレート
+        // params.encodings[0].scaleResolutionDownBy = 1; // 解像度をそのまま使用
+        // sender.setParameters(params);
     });
 
     // ICE Candidateの処理
@@ -83,6 +98,17 @@ function App() {
 
     // オファーを作成
     const offer = await peerConnectionRef.current.createOffer();
+    // let modifiedSDP = offer.sdp;
+    // modifiedSDP = modifiedSDP.replace(
+    //   /a=rtpmap:(\d+) H264\/90000[\s\S]*?a=fmtp:\1 [^\r\n]*/g,
+    //   match => {
+    //       return match.replace(
+    //           /profile-level-id=[a-fA-F0-9]+/,
+    //           "profile-level-id=42e01f"
+    //       );
+    //   }
+    // );
+
     await peerConnectionRef.current.setLocalDescription(offer);
 
     // サーバーにオファーを送信
@@ -91,6 +117,10 @@ function App() {
       sdp: offer.sdp,
     });
     setIsConnected(true);
+
+    // peerConnectionRef.current.addEventListener('signalingstatechange', (event) => {
+    //   console.log('Connection state change:', event);
+    // });
   };
 
   // サーバーから受け取ったアンサーを処理
