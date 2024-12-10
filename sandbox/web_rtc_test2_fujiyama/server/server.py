@@ -174,19 +174,19 @@ class VisionProcessor:
     
     def on_frame_received(self, sid, frame):
         self.counter += 1
-        x = math.sin(self.counter / 10) * 100 + 200
-        y = math.cos(self.counter / 10) * 100 + 200
+        x = math.sin(self.counter / 10) * 10
+        y = math.cos(self.counter / 10) * 10
         return {
             "results": [
                 {
                     "label": "person",
                     "confidence": 0.9,
-                    "box": [x + 0, y + 0, x + 100, y + 100]
+                    "box": [x + 50, y + 50, 50, 50]
                 },
                 {
                     "label": "car",
                     "confidence": 0.8,
-                    "box": [x + 100, y + 100, x + 200, y + 200]
+                    "box": [-x + 100, -y + 100, 50, 50]
                 }
             ]
         }

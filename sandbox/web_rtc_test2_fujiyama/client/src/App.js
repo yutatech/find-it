@@ -120,15 +120,15 @@ const useLocalVideo = () => {
   return { localStreamRef, isLocalStreamReady, getLocalStream };
 };
 
-const useResultReceiver = (socketRef) => {
-  const handleResult = (data) => {
-    console.log('Received result:', data);
+const useResultReceiver = (socketRef, drawResult) => {
+  const handleResult = (result) => {
+    drawResult(result);
   };
 
   const setSocketHandlers = () => {
     console.log('setSocketHandlers');
-    socketRef.current.on("result", (data) => {
-      handleResult(data);
+    socketRef.current.on("result", (result) => {
+      handleResult(result);
     });
   };
 
@@ -136,18 +136,45 @@ const useResultReceiver = (socketRef) => {
     setSocketHandlers();
   }
 
-  return {setupResultReceiver};
+  return { setupResultReceiver };
 };
+
+const useResultDrawer = (canvasRef) => {
+  const drawResult = (result) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    // キャンバスをクリア
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // console.log('result:', result);
+    result.results.forEach((result) => {
+      if (result.label === 'person') {
+        ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+      }
+      else {
+        ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
+      }
+
+      ctx.fillRect(result.box[0], result.box[1], result.box[2], result.box[3]);
+    });
+  }
+
+  return { drawResult };
+};
+
 
 function App() {
   const socketRef = useRef(null);
   const localVideoRef = useRef(null);
+  const canvasRef = useRef(null);
   socketRef.current = io(server_url, {
     transports: ['websocket', 'polling']
   });
   const { localStreamRef, isLocalStreamReady, getLocalStream } = useLocalVideo();
   const { isConnected, setupWebRtc } = useWebRtc(socketRef, localStreamRef, isLocalStreamReady, localVideoRef);
-  const { setupResultReceiver } = useResultReceiver(socketRef);
+  const { drawResult } = useResultDrawer(canvasRef);
+  const { setupResultReceiver } = useResultReceiver(socketRef, drawResult);
 
   const setupConnection = () => {
     setupWebRtc();
@@ -161,7 +188,24 @@ function App() {
   return (
     <div className="App">
       <h1>WebRTC Video Call</h1>
-      <video ref={localVideoRef} autoPlay muted width="300" height="200" />
+      <div style={{ position: "relative", width: "300px", height: "200px" }}>
+        {/* Video */}
+        <video
+          ref={localVideoRef}
+          autoPlay
+          muted
+          width="300"
+          height="200"
+          style={{ position: "absolute", top: 0, left: 0 }}
+        />
+        {/* Canvas */}
+        <canvas
+          ref={canvasRef}
+          width="300"
+          height="200"
+          style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
+        />
+      </div>
       <div>
         {isConnected ? (
           <p>Connected</p>
