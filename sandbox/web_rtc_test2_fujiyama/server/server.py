@@ -48,13 +48,17 @@ class WebRtcServer:
     def __init__(self):
         self.pcs = {}
         self.sio = None
+        self.on_frame_received = None
+
+    def set_on_frame_received(self, on_frame_received):
+        self.on_frame_received = on_frame_received
 
     def set_handlers(self, sio: AsyncServer):
         self.sio = sio
 
         @sio.on("offer")
         async def on_offer(sid, offer: dict):
-            print('on_offer')
+            print('receive offer')
             answer = await self.sio_handle_offer(sid, offer)
             await sio.emit("answer", answer, to=sid)
 
@@ -94,7 +98,8 @@ class WebRtcServer:
 
         @pc.on("track")
         async def handle_track(track: RemoteStreamTrack):
-            await self.pc_handle_track(pc, track)
+            print("receive track")
+            await self.pc_handle_track(sid, pc, track)
 
         # リモートのOfferをセット
         await pc.setRemoteDescription(
@@ -140,19 +145,52 @@ class WebRtcServer:
                                      candidate: RTCIceCandidate):
         await self.sio.emit("ice", candidate, to=sid)
 
-    async def pc_handle_track(self, pc: RTCPeerConnection,
+    async def pc_handle_track(self, sid, pc: RTCPeerConnection,
                               track: RemoteStreamTrack):
-        print('on_track')
         if track.kind == "video":
             while True:
                 print("loop")
-                frame = await track.recv()
-                print(frame)
-                await asyncio.sleep(0.01)
+                try:
+                    frame = await track.recv()
+                    await asyncio.sleep(0.01)
+                    if self.on_frame_received is not None:
+                        result = self.on_frame_received(sid, frame)
+                        await self.sio.emit("result", result, to=sid)
+                except Exception as e:
+                    print("Error WebRtcServer.pc_handle_track():", e)
+                    break
 
         @track.on("ended")
         async def on_ended():
             print("Track", track.kind, "ended")
+            
+
+import math
+
+
+class VisionProcessor:
+    def __init__(self):
+        self.counter = 0
+    
+    def on_frame_received(self, sid, frame):
+        self.counter += 1
+        x = math.sin(self.counter / 10) * 100 + 200
+        y = math.cos(self.counter / 10) * 100 + 200
+        return {
+            "results": [
+                {
+                    "label": "person",
+                    "confidence": 0.9,
+                    "box": [x + 0, y + 0, x + 100, y + 100]
+                },
+                {
+                    "label": "car",
+                    "confidence": 0.8,
+                    "box": [x + 100, y + 100, x + 200, y + 200]
+                }
+            ]
+        }
+    
 
 
 if __name__ == "__main__":
@@ -161,6 +199,8 @@ if __name__ == "__main__":
     socket_server.set_handlers(server.app)
     web_rtc_server = WebRtcServer()
     web_rtc_server.set_handlers(socket_server.sio)
+    vision_processor = VisionProcessor()
+    web_rtc_server.set_on_frame_received(vision_processor.on_frame_received)
 
     import uvicorn
     uvicorn.run(server.app,
