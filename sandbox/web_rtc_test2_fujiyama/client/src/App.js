@@ -106,7 +106,7 @@ const useLocalVideo = () => {
 
   const getLocalStream = async () => {
     // カメラの取得
-    navigator.mediaDevices.getUserMedia({ video: { width: 360, height: 240, facingMode: 'user' }, audio: false })
+    navigator.mediaDevices.getUserMedia({ video: { width: 360, height: 240, facingMode: 'environment' }, audio: false })
       .then((stream) => {
         console.log('success to get media');
         localStreamRef.current = stream;
@@ -149,18 +149,31 @@ const useResultDrawer = (canvasRef) => {
 
     // console.log('result:', result);
     result.results.forEach((result) => {
+      let fillStyle = "";
+      let textStyle = "";
       if (result.label === 'person') {
-        ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+        fillStyle = "rgba(255, 0, 0, 0.5)";
+        textStyle = "rgba(255, 0, 0, 1)";
       }
       else {
-        ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
+        fillStyle = "rgba(0, 255, 0, 0.5)";
+        textStyle = "rgba(0, 255, 0, 1)";
       }
-
+      ctx.fillStyle = fillStyle;
       ctx.fillRect(result.box[0], result.box[1], result.box[2], result.box[3]);
+      ctx.fillStyle = textStyle;
+      ctx.font = "15px Arial";
+      ctx.fillText(result.label, result.box[0], result.box[1]+15);
     });
   }
 
-  return { drawResult };
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  return { drawResult, clearCanvas };
 };
 
 
@@ -173,7 +186,7 @@ function App() {
   });
   const { localStreamRef, isLocalStreamReady, getLocalStream } = useLocalVideo();
   const { isConnected, setupWebRtc } = useWebRtc(socketRef, localStreamRef, isLocalStreamReady, localVideoRef);
-  const { drawResult } = useResultDrawer(canvasRef);
+  const { drawResult, clearCanvas } = useResultDrawer(canvasRef);
   const { setupResultReceiver } = useResultReceiver(socketRef, drawResult);
 
   const setupConnection = () => {
@@ -185,24 +198,31 @@ function App() {
     getLocalStream();
   });
 
+  useEffect(() => {
+    if (!isConnected) {
+      clearCanvas();
+    }
+  }, [isConnected]);
+
   return (
     <div className="App">
       <h1>WebRTC Video Call</h1>
-      <div style={{ position: "relative", width: "300px", height: "200px" }}>
+      <div style={{ position: "relative", width: "360px", height: "240px" }}>
         {/* Video */}
         <video
           ref={localVideoRef}
           autoPlay
+          playsInline
           muted
-          width="300"
-          height="200"
+          width="360"
+          height="240"
           style={{ position: "absolute", top: 0, left: 0 }}
         />
         {/* Canvas */}
         <canvas
           ref={canvasRef}
-          width="300"
-          height="200"
+          width="360"
+          height="240"
           style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
         />
       </div>

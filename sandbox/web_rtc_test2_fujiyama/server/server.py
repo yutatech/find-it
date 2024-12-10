@@ -149,13 +149,12 @@ class WebRtcServer:
                               track: RemoteStreamTrack):
         if track.kind == "video":
             while True:
-                print("loop")
                 try:
                     frame = await track.recv()
-                    await asyncio.sleep(0.01)
-                    if self.on_frame_received is not None:
-                        result = self.on_frame_received(sid, frame)
-                        await self.sio.emit("result", result, to=sid)
+                    if (track._queue.empty()):
+                        if self.on_frame_received is not None:
+                            result = self.on_frame_received(sid, frame)
+                            await self.sio.emit("result", result, to=sid)
                 except Exception as e:
                     print("Error WebRtcServer.pc_handle_track():", e)
                     break
@@ -166,14 +165,52 @@ class WebRtcServer:
             
 
 import math
-
+import torch
+from ultralytics import YOLO
+import cv2
 
 class VisionProcessor:
     def __init__(self):
         self.counter = 0
+        # self.model = torch.hub.load("ultralytics/yolov8", "yolov8")
+        self.model = YOLO("yolo11n.pt")
+        print('load model complete')
     
     def on_frame_received(self, sid, frame):
         self.counter += 1
+        
+        try:
+            # OpenCVで画像を表示
+            img = frame.to_ndarray(format="bgr24")
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            
+            cv2.imshow("Received Video", img)
+            # cv2.waitKey(1)  # OpenCVでフレーム表示を更新
+            results = self.model(img)
+        except Exception as e:
+            print("Error VisionProcessor.on_frame_received():", e)
+            return
+        
+        names = results[0].names
+        classes = results[0].boxes.cls
+        boxes = results[0].boxes
+        annotatedFrame = results[0].plot()
+  
+  
+        result_dict = []
+        print("\n\n\n")
+        for box, cls in zip(boxes, classes):
+            name = names[int(cls)]
+            x1, y1, x2, y2 = [int(i) for i in box.xyxy[0]]
+            print(name, x1, y1, x2, y2)
+            result_dict.append({
+                "label": name,
+                "box": [x1, y1, x2 - x1, y2 - y1]
+            })
+        return {
+            "results": result_dict
+        }
+        
         x = math.sin(self.counter / 10) * 10
         y = math.cos(self.counter / 10) * 10
         return {
