@@ -162,7 +162,7 @@ class WebRtcServer:
         @track.on("ended")
         async def on_ended():
             print("Track", track.kind, "ended")
-            
+
 
 import math
 import torch
@@ -181,11 +181,11 @@ class VisionProcessor:
         
         try:
             # OpenCVで画像を表示
-            img = frame.to_ndarray(format="bgr24")
+            img = frame.to_ndarray(format="rgb24")
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             
             cv2.imshow("Received Video", img)
-            # cv2.waitKey(1)  # OpenCVでフレーム表示を更新
+            cv2.waitKey(1)  # OpenCVでフレーム表示を更新
             results = self.model(img)
         except Exception as e:
             print("Error VisionProcessor.on_frame_received():", e)
@@ -208,6 +208,7 @@ class VisionProcessor:
                 "box": [x1, y1, x2 - x1, y2 - y1]
             })
         return {
+            "image_size": {'width': img.shape[1], 'height': img.shape[0]},
             "results": result_dict
         }
         
