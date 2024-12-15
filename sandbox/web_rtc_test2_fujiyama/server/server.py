@@ -21,7 +21,8 @@ class FastApiServer:
         )
 
 
-from socketio import AsyncServer, ASGIApp
+from socketio.async_server import AsyncServer
+from socketio.asgi import ASGIApp
 
 
 class SocketServer:
@@ -39,9 +40,7 @@ class SocketServer:
 
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCIceCandidate, RTCConfiguration, RTCIceServer
 from aiortc.rtcrtpreceiver import RemoteStreamTrack
-from socketio import AsyncServer
-import asyncio
-
+from socketio.async_server import AsyncServer
 
 class WebRtcServer:
 
@@ -151,6 +150,8 @@ class WebRtcServer:
             while True:
                 try:
                     frame = await track.recv()
+                    print(frame.dts, frame.pts, frame.time, frame.time_base)
+                    # continue
                     if (track._queue.empty()):
                         if self.on_frame_received is not None:
                             result = self.on_frame_received(sid, frame)
@@ -165,7 +166,6 @@ class WebRtcServer:
 
 
 import math
-import torch
 from ultralytics import YOLO
 import cv2
 
@@ -198,11 +198,11 @@ class VisionProcessor:
   
   
         result_dict = []
-        print("\n\n\n")
+        # print("\n\n\n")
         for box, cls in zip(boxes, classes):
             name = names[int(cls)]
             x1, y1, x2, y2 = [int(i) for i in box.xyxy[0]]
-            print(name, x1, y1, x2, y2)
+            # print(name, x1, y1, x2, y2)
             result_dict.append({
                 "label": name,
                 "box": [x1, y1, x2 - x1, y2 - y1]
@@ -230,7 +230,6 @@ class VisionProcessor:
         }
     
 
-
 if __name__ == "__main__":
     server = FastApiServer(allow_origins=["https://yuta-air.local:3000"])
     socket_server = SocketServer(allow_origins=["https://yuta-air.local:3000"])
@@ -244,6 +243,6 @@ if __name__ == "__main__":
     uvicorn.run(server.app,
                 host="0.0.0.0",
                 port=8000,
-                ssl_certfile="./yuta-air.local+1.pem",
-                ssl_keyfile="./yuta-air.local+1-key.pem",
+                ssl_certfile="./webrtc-test.pem",
+                ssl_keyfile="./webrtc-test-key.pem",
                 log_level="debug")

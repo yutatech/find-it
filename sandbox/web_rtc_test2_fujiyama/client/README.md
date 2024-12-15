@@ -1,70 +1,52 @@
-# Getting Started with Create React App
+# WebRTC client
+## HTTPS化
+`../server/README.md`を参照してserver側の.pemファイルを生成してください。
+この手順は必須です。
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## setup
+```sh
+npm install
+```
 
-## Available Scripts
+下のようなエラーが出るが、気にしない。
+```
+8 vulnerabilities (2 moderate, 6 high)
 
-In the project directory, you can run:
+To address all issues (including breaking changes), run:
+  npm audit fix --force
 
-### `npm start`
+Run `npm audit` for details.
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## プログラムの書き換え
+App.jsの5行目、`server_url`の`yuta-air.local`の部分を自分のPCの`hostname.local`に書き換える
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 起動
+```sh
+npm start
+```
 
-### `npm test`
+## iOSからアクセスする
+### サーバー端末のポート解放
+#### Windowsの場合
+- [＜Windows10・11＞ファイアウォールのポートの開放](http://www.fc-center.jp/support/index.php?%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF%A5%BF%A5%A4%A5%D7/windows%A5%D5%A5%A1%A5%A4%A5%A2%A5%A6%A5%A9%A1%BC%A5%EB%A4%CE%A5%DD%A1%BC%A5%C8%A4%CE%B3%AB%CA%FC/Windows10%A1%A611%A5%D5%A5%A1%A5%A4%A5%A2%A5%A6%A5%A9%A1%BC%A5%EB%A4%CE%A5%DD%A1%BC%A5%C8%A4%CE%B3%AB%CA%FC)などを参考にWindowsの3000番Portと8000番Portを解放する
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+または
+- [Windowsファイアウォールを無効にする方法](https://www.buffalo.jp/support/faq/detail/16417.html)などを参考にファイアウォールを無効化する
 
-### `npm run build`
+#### macOSの場合
+- 設定アプリ > ネットワーク > ファイアウォール を開く
+- ファイアウォールのトグルスイッチをOFFにする
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### サーバー側端末のホスト名を調べる
+- Windows
+  - [【PC】クライアントPCの「ホスト名(コンピューター名)」を変更したい](https://faq01-fb.fujifilm.com/faq/show/85529?site_domain=default)などを参考に調べる
+- macOS
+  - ターミナルを開いた時に出ている文字の`username@hostname:~$`みたいな文字列のhostnameの部分がホスト名
+### iOSのブラウザからアクセス
+「サーバー側端末のホスト名を調べる」で分かったホスト名をhostnameを表します。
+1. `https://hostname.local:8000`にアクセス
+2. 「接続はプライベートではありません」みたいな文言が表示されるので、詳細を表示 > このWebサイトを閲覧　をクリック
+3. Not Foudと表示されればOK
+4. `https://hostname.local:3000`にアクセス
+5. 2.と同様に警告を突破してアクセスする
