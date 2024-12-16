@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
+import cv from '@techstark/opencv-js';
+window.cv = cv;
 
 const server_url = "https://yuta-air.local:8000";
 
@@ -23,6 +25,7 @@ const useWebRtc = (socketRef, localStreamRef, isLocalStreamReady, rocalVideoRef)
     socketRef.current.on('disconnect', () => {
       console.log('Disconnected from server');
       setIsConnected(false);
+      setupWebRtc();
     });
 
     socketRef.current.on('answer', (data) => {
@@ -158,7 +161,7 @@ const useResultDrawer = (canvasRef, videoSize) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    const imageSize = {width: result.image_size.width, height: result.image_size.height};
+    const imageSize = { width: result.image_size.width, height: result.image_size.height };
 
     const scale = canvas.width / videoSize.width;
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
@@ -238,11 +241,186 @@ const useResultDrawer = (canvasRef, videoSize) => {
   return { drawResult, clearCanvas, canvasSize };
 };
 
+// const VideoMotionDetector = (streamRef, isLocalStreamReady) => {
+//   const canvasRef = useRef(null);
+//   const prevFrameRef = useRef(null);
+
+//   useEffect(() => {
+//       if (!streamRef.current) return;
+//       const videoTrack = streamRef.current.getVideoTracks()[0]
+
+//       // Create a video element for the video track
+//       const video = document.createElement("videoTrack");
+//       video.srcObject = new MediaStream([videoTrack]);
+//       video.play();
+
+//       const canvas = canvasRef.current;
+//       const ctx = canvas.getContext("2d");
+
+//       const processFrame = () => {
+//           // Draw the current frame on the canvas
+//           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+//           // Get the current frame data
+//           const currentFrame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+//           if (prevFrameRef.current) {
+//               // Compare the current frame with the previous frame
+//               const movement = calculateMovement(prevFrameRef.current, currentFrame);
+//               console.log("Movement detected:", movement);
+//           }
+
+//           // Save the current frame as the previous frame for the next iteration
+//           prevFrameRef.current = currentFrame;
+
+//           // Process the next frame
+//           requestAnimationFrame(processFrame);
+//       };
+
+//       // Start processing frames
+//       processFrame();
+
+//       // Cleanup on unmount
+//       return () => {
+//           video.pause();
+//       };
+//   }, [isLocalStreamReady]);
+
+//   const calculateMovement = (prevFrame, currentFrame) => {
+//       let totalDiff = 0;
+//       const threshold = 20; // Sensitivity for motion detection
+
+//       // Loop through each pixel (4 values per pixel: r, g, b, a)
+//       for (let i = 0; i < prevFrame.data.length; i += 4) {
+//           const rDiff = Math.abs(currentFrame.data[i] - prevFrame.data[i]);
+//           const gDiff = Math.abs(currentFrame.data[i + 1] - prevFrame.data[i + 1]);
+//           const bDiff = Math.abs(currentFrame.data[i + 2] - prevFrame.data[i + 2]);
+
+//           if (rDiff > threshold || gDiff > threshold || bDiff > threshold) {
+//               totalDiff++;
+//           }
+//       }
+
+//       // Return the total number of pixels that changed
+//       return totalDiff / (currentFrame.data.length / 4);
+//   };
+
+//   return (
+//       <div>
+//           <canvas
+//               ref={canvasRef}
+//               width={640} // Adjust the resolution to match the video track
+//               height={480}
+//               style={{ display: "none" }} // Hide canvas if it's not needed visually
+//           ></canvas>
+//       </div>
+//   );
+// };
+
+
+/*
+import React, { useEffect, useRef, useState } from 'react';
+
+const VideoProcessor = () => {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [processedStream, setProcessedStream] = useState(null);
+  const streamRef = useRef(null);
+  const [isStreamReady, setIsStreamReady] = useState(false);
+  const processedVideoRef = useRef(null);
+
+  const processVideo = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    const drawFrame = () => {
+      if (!video.paused && !video.ended) {
+        // 動画をキャンバスに描画
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // 画像加工（例: グレースケール化）
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          data[i] = avg; // Red
+          data[i + 1] = avg; // Green
+          data[i + 2] = avg; // Blue
+        }
+        ctx.putImageData(imageData, 0, 0);
+      }
+
+      // 次のフレームを予約
+      requestAnimationFrame(drawFrame);
+    };
+
+    drawFrame();
+  };
+
+  useEffect(() => {
+    // カメラストリームを取得
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+      .then((stream) => {
+        streamRef.current = stream;
+        setIsStreamReady(true);
+      })
+      .catch((err) => {
+        console.error('Error accessing media devices:', err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (isStreamReady) {
+      let video = videoRef.current;
+      let canvas = canvasRef.current;
+        // ストリームを <video> に設定
+        console.log("video", video.srcObject);
+        video.srcObject = streamRef.current;
+        video.play();
+
+        // キャンバスサイズを動画のサイズに合わせる
+        video.onloadedmetadata = () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+
+          // 動画のフレーム加工を開始
+          processVideo();
+
+          // 新しいストリームを生成
+          const newStream = canvas.captureStream(30); // 30fps のストリーム
+          // setProcessedStream(newStream);
+          processedVideoRef.current.srcObject = newStream;
+        };
+    }
+  }, [isStreamReady]);
+
+  return (
+    <div>
+      <h2>Original Video Stream</h2>
+      <video ref={videoRef} autoPlay muted />
+      <h2>Processed Video Stream</h2>
+      <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+        <video ref={processedVideoRef}
+          autoPlay
+          muted
+          style={{ border: '2px solid red' }}
+        ></video>
+    </div>
+  );
+};
+
+export default VideoProcessor;
+*/
+
 
 function App() {
   const socketRef = useRef(null);
   const localVideoRef = useRef(null);
   const canvasRef = useRef(null);
+  const videoCanvasRef = useRef(null);
+
   socketRef.current = io(server_url, {
     transports: ['websocket', 'polling']
   });
@@ -250,7 +428,6 @@ function App() {
   const { isConnected, setupWebRtc } = useWebRtc(socketRef, localStreamRef, isLocalStreamReady, localVideoRef);
   const { drawResult, clearCanvas, canvasSize } = useResultDrawer(canvasRef, videoSize);
   const { setupResultReceiver } = useResultReceiver(socketRef, drawResult);
-  const videoCanvasRef = useRef(null);
 
   const setupConnection = () => {
     setupWebRtc();
@@ -292,6 +469,7 @@ function App() {
           <button onClick={setupConnection}>Start Call</button>
         )}
       </div>
+      {/* {VideoProcessor(localStreamRef, isLocalStreamReady)} */}
     </div>
   );
 }
