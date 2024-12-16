@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 // import Camera from "./Camera"; // カメラコンポーネントをインポート
 import Camera2 from "./Camera2"; // カメラコンポーネントをインポート
+import { Button, TextField, Select, MenuItem } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 function Labelselect() {
   const [inputValue, setInputValue] = useState(""); // 入力された値
@@ -8,11 +10,21 @@ function Labelselect() {
   const [selectedLabel, setSelectedLabel] = useState(null); // 選択されたラベル
   const suggestions = ["時計", "メガネ", "リモコン", "イヤホン"];
   const dropdownRef = useRef(null); // ドロップダウン要素を参照
+  const [label, setLabel] = useState('');
+  const [labelList, setLabelList] = useState([]);
+  const [useNewLabel, setUseNewLabel] = useState(true);
+  const navigate = useNavigate();
 
   // 入力値に基づいて候補をフィルタリング
   const filteredSuggestions = suggestions.filter((item) =>
     item.toLowerCase().includes(inputValue.toLowerCase())
   );
+
+
+  useEffect(() => {
+    const storedLabels = JSON.parse(localStorage.getItem('labels')) || [];
+    setLabelList(storedLabels);
+}, []);
 
   // 非表示処理を設定
   useEffect(() => {
@@ -38,10 +50,11 @@ function Labelselect() {
 
   return (
     <div>
+      <button onClick={() => navigate('/')}>ホームに戻る</button>
       {/* ラベル選択画面 */}
       {!selectedLabel ? (
         <div style={{ position: "relative", width: "200px" }} ref={dropdownRef}>
-          <h2>何を探します？</h2>
+          <h2>何を探しますか？</h2>
           {/* テキストボックス */}
           <input
             type="text"
@@ -86,6 +99,20 @@ function Labelselect() {
               ))}
             </ul>
           )}
+            <Select
+                value={useNewLabel ? '' : label}
+                onChange={(e) => {
+                    setLabel(e.target.value);
+                    setUseNewLabel(false);
+                }}
+                displayEmpty
+                fullWidth
+            >
+                <MenuItem value="" disabled>ラベルを選択</MenuItem>
+                {labelList.map((lbl, index) => (
+                    <MenuItem key={index} value={lbl}>{lbl}</MenuItem>
+                ))}
+            </Select>
         </div>
       ) : (
         // カメラコンポーネントを表示
