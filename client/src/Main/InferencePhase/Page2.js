@@ -7,7 +7,7 @@ function Page2() {
   return (
     <div>
       <h1>探す</h1>
-      <h2>ラベルの選択</h2>
+      {/* <h2>ラベルの選択</h2> */}
       <Labelselect />
     </div>
   );
