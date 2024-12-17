@@ -10,6 +10,9 @@ model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/runs/detect/train10/weights/
 image_path = r'/mnt/c/Users/shingo/YOLO/watch/test/images/7OSMJ0668M2Q_jpg.rf.5617e371d01dfa2a57e5b09ec66ceba7.jpg'
 image = cv2.imread(image_path)
 
+# 検出を許可するラベル
+allowed_labels = ['glasses', 'Analog Watch', 'Digital Watch', 'Men-s Watch', 'Women-s Watch', 'remote']
+
 # 物体検出を実行
 results = model(image)
 
@@ -24,17 +27,23 @@ for result in results:
         cls = int(box.cls[0])  # クラスID
         label = model.names[cls]  # クラス名
 
-        # 検出結果を辞書形式で追加
-        detected_objects.append({
-            "class": label,
-            "confidence": conf,
-            "bounding_box": {
-                "x1": int(x1),
-                "y1": int(y1),
-                "x2": int(x2),
-                "y2": int(y2)
-            }
-        })
+        # 許可されたラベルのみ処理
+        if label in allowed_labels:
+            # ウォッチ関連のラベルを'watch'に変更
+            if label in ['Analog Watch', 'Digital Watch', 'Men-s Watch', 'Women-s Watch']:
+                label = 'watch'
+
+            # 検出結果を辞書形式で追加
+            detected_objects.append({
+                "class": label,
+                "confidence": conf,
+                "bounding_box": {
+                    "x1": int(x1),
+                    "y1": int(y1),
+                    "x2": int(x2),
+                    "y2": int(y2)
+                }
+            })
 
 # サーバーに送信するデータ
 payload = {
@@ -42,5 +51,7 @@ payload = {
     "detected_objects": detected_objects     # 検出結果
 }
 
-print("detected_objects")
-
+# 検出された物体を出力
+print("Detected Objects:")
+for obj in detected_objects:
+    print(f"Class: {obj['class']}, Confidence: {obj['confidence']:.2f}, Bounding Box: {obj['bounding_box']}")
