@@ -11,7 +11,7 @@ image_path = r'/mnt/c/Users/shingo/YOLO/watch/test/images/7OSMJ0668M2Q_jpg.rf.56
 image = cv2.imread(image_path)
 
 # 検出を許可するラベル
-allowed_labels = ['glasses', 'Analog Watch', 'Digital Watch', 'Men-s Watch', 'Women-s Watch', 'remote']
+allowed_labels = ['glasses', 'watch','remote']
 
 # 物体検出を実行
 results = model(image)
