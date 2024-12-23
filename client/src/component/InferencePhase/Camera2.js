@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, TextField, Select, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
-function Camera2({ label }) {
+function Camera2() {
   const videoRef = useRef(null); // video要素への参照
   const streamRef = useRef(null); // ストリームを保存する参照
   const isCameraStarting = useRef(false);
   const [isCameraActive, setCameraActive] = useState(false); // 初期状態をカメラ起動に設定
   const navigate = useNavigate();
+  const location = useLocation();
+  const label = location.state?.label;
+
 
   useEffect(() => {
     if (isCameraActive) {
@@ -69,8 +71,7 @@ function Camera2({ label }) {
 
   return (
     <div style={{ padding: "20px" }}>
-      
-      <button onClick={() => navigate('/page2/labelselect')}>ラベル選択に戻る</button>
+      <button onClick={() => navigate('/page2')}>ラベル選択に戻る</button>
       <h2>選択されたラベル: {label}</h2>
 
       {/* ボタンの表示切り替え */}
