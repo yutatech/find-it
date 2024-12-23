@@ -13,7 +13,7 @@ for f in TrainFiles:
     with open(os.path.join(dp_train, f), 'w') as tf:
         for l in lines:
             parts = l.split()
-            if parts and parts[0] == '0':
+            if parts:
                 parts[0] = '1'
             tf.write(' '.join(parts) + '\n')
 
@@ -24,6 +24,6 @@ for f in ValidFiles:
     with open(os.path.join(dp_valid, f), 'w') as vf:
         for l in lines:
             parts = l.split()
-            if parts and parts[0] == '0':
+            if parts:
                 parts[0] = '1'
             vf.write(' '.join(parts) + '\n')
