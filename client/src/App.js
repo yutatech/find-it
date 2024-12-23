@@ -1,13 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './Main/Home/Home';
-import Page1 from './Main/LearningPhase/Page1';
-import Page2 from './Main/InferencePhase/Page2';
-import AddPhoto from './Main/LearningPhase/TeacherData/AddPhoto';
-import LabelManagement from './Main/LearningPhase/TeacherData/LabelManagement';
-import EditPhoto from './Main/LearningPhase/TeacherData/EditPhoto';
-import Labelselect from './Main/InferencePhase/Labelselect';
-import Camera2 from './Main/InferencePhase/Camera2';
+import Home from './component/Home/Home';
+import Page1 from './component/LearningPhase/Page1';
+import Page2 from './component/InferencePhase/Page2';
+import AddPhoto from './component/LearningPhase/TeacherData/AddPhoto';
+import LabelManagement from './component/LearningPhase/TeacherData/LabelManagement';
+import EditPhoto from './component/LearningPhase/TeacherData/EditPhoto';
+import Labelselect from './component/InferencePhase/Labelselect';
+import Camera2 from './component/InferencePhase/Camera2';
 
 function App() {
   return (
