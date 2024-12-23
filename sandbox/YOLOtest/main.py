@@ -4,7 +4,7 @@ import requests
 import json
 
 # YOLOモデルのロード
-model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/runs/detect/train10/weights/glasses_watch_remote.pt')
+model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/watch_glasses_remote.pt')
 
 # 画像のパスを指定
 image_path = r'/mnt/c/Users/shingo/YOLO/watch/test/images/7OSMJ0668M2Q_jpg.rf.5617e371d01dfa2a57e5b09ec66ceba7.jpg'
@@ -14,7 +14,7 @@ image = cv2.imread(image_path)
 allowed_labels = ['glasses', 'watch','remote']
 
 model.conf = 0.5
-
+print(model.names)
 # 物体検出を実行
 results = model(image)
 
