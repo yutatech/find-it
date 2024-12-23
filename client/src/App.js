@@ -7,6 +7,7 @@ import AddPhoto from './Main/LearningPhase/TeacherData/AddPhoto';
 import LabelManagement from './Main/LearningPhase/TeacherData/LabelManagement';
 import EditPhoto from './Main/LearningPhase/TeacherData/EditPhoto';
 import Labelselect from './Main/InferencePhase/Labelselect';
+import Camera2 from './Main/InferencePhase/Camera2';
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
       <Route path="/page1/addphoto" element={<AddPhoto />} />
       <Route path="/page1/labelmanagement" element={<LabelManagement />} />
       <Route path="/page1/editphoto" element={<EditPhoto />} />   
-      <Route path="/page2/labelselect" element={<Labelselect />} />     
+      <Route path="/page2/labelselect" element={<Labelselect />} />
+      <Route path="/page2/camera" element={<Camera2 />} />     
       </Routes>
     </Router>
   );

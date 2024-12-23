@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, TextField, Select, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
-function Camera2({ label }) {
+function Camera2() {
   const videoRef = useRef(null); // video要素への参照
   const streamRef = useRef(null); // ストリームを保存する参照
   const isCameraStarting = useRef(false);
   const [isCameraActive, setCameraActive] = useState(false); // 初期状態をカメラ起動に設定
   const navigate = useNavigate();
+  const location = useLocation();
+  const label = location.state?.label;
+
 
   useEffect(() => {
     if (isCameraActive) {

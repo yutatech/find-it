@@ -1,118 +1,45 @@
 import React, { useState, useEffect, useRef } from "react";
 // import Camera from "./Camera"; // カメラコンポーネントをインポート
 import Camera2 from "./Camera2"; // カメラコンポーネントをインポート
-import { Button, TextField, Select, MenuItem } from '@mui/material';
+import { Autocomplete, TextField, Select, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function Labelselect() {
-  const [inputValue, setInputValue] = useState(""); // 入力された値
-  const [isDropdownVisible, setDropdownVisible] = useState(false); // ドロップダウンの表示状態
-  const [selectedLabel, setSelectedLabel] = useState(null); // 選択されたラベル
-  const suggestions = ["時計", "メガネ", "リモコン", "イヤホン"];
-  const dropdownRef = useRef(null); // ドロップダウン要素を参照
+  const [selectedLabel, setSelectedLabel] = useState(null); 
   const [label, setLabel] = useState('');
   const [labelList, setLabelList] = useState([]);
   const [useNewLabel, setUseNewLabel] = useState(true);
   const navigate = useNavigate();
-
-  // 入力値に基づいて候補をフィルタリング
-  const filteredSuggestions = suggestions.filter((item) =>
-    item.toLowerCase().includes(inputValue.toLowerCase())
-  );
-
 
   useEffect(() => {
     const storedLabels = JSON.parse(localStorage.getItem('labels')) || [];
     setLabelList(storedLabels);
 }, []);
 
-  // 非表示処理を設定
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // ドロップダウンやテキストボックス外をクリックしたら非表示にする
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownVisible(false);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
-  // ラベル選択時の処理
-  const handleSelect = (label) => {
-    setSelectedLabel(label); // 選択したラベルを保存
-    setDropdownVisible(false); // ドロップダウンを非表示
+  // ラベルを選択したときの処理
+  const handleLabelChange = (event, newValue) => {
+    if (newValue) {
+      setLabel(newValue);
+      navigate("/page2/camera",{state:{label: newValue}});
+    }
   };
-
+  
   return (
     <div>
       <button onClick={() => navigate('/')}>ホームに戻る</button>
       {/* ラベル選択画面 */}
       {!selectedLabel ? (
-        <div style={{ position: "relative", width: "200px" }} ref={dropdownRef}>
+        <div style={{ position: "relative", width: "200px" }}>
           <h2>何を探しますか？</h2>
-          {/* テキストボックス */}
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onFocus={() => setDropdownVisible(true)} // フォーカス時にドロップダウンを表示
-            placeholder="Type to search..."
-            style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
-          />
-
-          {/* 選択候補のドロップダウン */}
-          {isDropdownVisible && filteredSuggestions.length > 0 && (
-            <ul
-              style={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                right: 0,
-                margin: 0,
-                padding: "8px 0",
-                listStyle: "none",
-                background: "#fff",
-                border: "1px solid #ccc",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                zIndex: 1000,
-              }}
-            >
-              {filteredSuggestions.map((suggestion, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleSelect(suggestion)}
-                  style={{
-                    padding: "8px",
-                    cursor: "pointer",
-                    background: "#fff",
-                  }}
-                  onMouseOver={(e) => (e.target.style.background = "#f0f0f0")}
-                  onMouseOut={(e) => (e.target.style.background = "#fff")}
-                >
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          )}
-            <Select
-                value={useNewLabel ? '' : label}
-                onChange={(e) => {
-                    setLabel(e.target.value);
-                    setUseNewLabel(false);
-                }}
-                displayEmpty
-                fullWidth
-            >
-                <MenuItem value="" disabled>ラベルを選択</MenuItem>
-                {labelList.map((lbl, index) => (
-                    <MenuItem key={index} value={lbl}>{lbl}</MenuItem>
-                ))}
-            </Select>
+            <Autocomplete
+            options={labelList}
+            value={label}
+            onChange={handleLabelChange}
+            open // 常に候補を表示する
+            disableCloseOnSelect // 候補を選択してもリストが閉じないようにする
+            renderInput={(params) => <TextField {...params} label="ラベルを選択" inputProps={{ ...params.inputProps, readOnly: true }}/>}
+            fullWidth
+            />
         </div>
       ) : (
         // カメラコンポーネントを表示
