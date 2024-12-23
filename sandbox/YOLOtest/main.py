@@ -4,7 +4,7 @@ import requests
 import json
 
 # YOLOモデルのロード
-model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/runs/detect/train10/weights/glasses_watch.pt')
+model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/runs/detect/train10/weights/glasses_watch_remote.pt')
 
 # 画像のパスを指定
 image_path = r'/mnt/c/Users/shingo/YOLO/watch/test/images/7OSMJ0668M2Q_jpg.rf.5617e371d01dfa2a57e5b09ec66ceba7.jpg'
@@ -12,6 +12,8 @@ image = cv2.imread(image_path)
 
 # 検出を許可するラベル
 allowed_labels = ['glasses', 'watch','remote']
+
+model.conf = 0.5
 
 # 物体検出を実行
 results = model(image)
@@ -29,10 +31,6 @@ for result in results:
 
         # 許可されたラベルのみ処理
         if label in allowed_labels:
-            # ウォッチ関連のラベルを'watch'に変更
-            if label in ['Analog Watch', 'Digital Watch', 'Men-s Watch', 'Women-s Watch']:
-                label = 'watch'
-
             # 検出結果を辞書形式で追加
             detected_objects.append({
                 "class": label,
