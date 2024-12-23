@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+
 
 const LabelManagement = () => {
     const [labels, setLabels] = useState([]);
@@ -8,7 +8,7 @@ const LabelManagement = () => {
     const [editLabel, setEditLabel] = useState('');
     const [selectedLabel, setSelectedLabel] = useState('');
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
+    
 
     // ラベル一覧の読み込み
     useEffect(() => {
@@ -67,7 +67,7 @@ const LabelManagement = () => {
 
     return (
         <div>
-            <button onClick={() => navigate('/page1')}>戻る</button>
+            
             <h1>ラベル管理</h1>
 
             <TextField

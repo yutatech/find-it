@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Button, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+
 const EditPhoto = () => {
     const [images, setImages] = useState([]);
     const [labels, setLabels] = useState([]);
@@ -10,8 +10,7 @@ const EditPhoto = () => {
     const [newLabel, setNewLabel] = useState('');
     const [selectedLabel, setSelectedLabel] = useState('');
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
-
+   
     // 初期データのロード
     useEffect(() => {
         const storedImages = JSON.parse(localStorage.getItem('images')) || [];
@@ -64,7 +63,7 @@ const EditPhoto = () => {
 
     return (
         <div>
-            <button onClick={() => navigate('/page1')}>戻る</button>
+            
             <h1>画像編集</h1>
 
             {Object.keys(groupedImages).length === 0 ? (

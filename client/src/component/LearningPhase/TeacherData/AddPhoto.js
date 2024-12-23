@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, TextField, Select, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 
 const AddPhoto = () => {
     const [image, setImage] = useState(null);
@@ -8,7 +7,7 @@ const AddPhoto = () => {
     const [labelList, setLabelList] = useState([]);
     const [useNewLabel, setUseNewLabel] = useState(true);
     const videoRef = useRef(null);
-    const navigate = useNavigate();
+    
 
     useEffect(() => {
         const storedLabels = JSON.parse(localStorage.getItem('labels')) || [];
@@ -61,7 +60,7 @@ const AddPhoto = () => {
 
     return (
         <div>
-            <button onClick={() => navigate('/page1')}>戻る</button>
+            
 
             <h2>ラベルを選択または入力</h2>
             <Select

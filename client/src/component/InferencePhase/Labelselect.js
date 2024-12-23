@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 // import Camera from "./Camera"; // カメラコンポーネントをインポート
 import Camera2 from "./Camera2"; // カメラコンポーネントをインポート
 import { Button, TextField, Select, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+
 
 function Labelselect() {
   const [inputValue, setInputValue] = useState(""); // 入力された値
@@ -13,7 +13,7 @@ function Labelselect() {
   const [label, setLabel] = useState('');
   const [labelList, setLabelList] = useState([]);
   const [useNewLabel, setUseNewLabel] = useState(true);
-  const navigate = useNavigate();
+ 
 
   // 入力値に基づいて候補をフィルタリング
   const filteredSuggestions = suggestions.filter((item) =>
@@ -50,7 +50,7 @@ function Labelselect() {
 
   return (
     <div>
-      <button onClick={() => navigate('/')}>ホームに戻る</button>
+      
       {/* ラベル選択画面 */}
       {!selectedLabel ? (
         <div style={{ position: "relative", width: "200px" }} ref={dropdownRef}>
