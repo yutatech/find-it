@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Send Image Base64 via Socket.IO</title>
+</head>
+<body>
+  <h1>Send Image + Label (Base64)</h1>
+
+  <input type="file" id="fileInput" />
+  <input type="text" id="labelInput" placeholder="Enter label..." />
+  <button id="sendBtn">Send</button>
+
+  <!-- Socket.IO クライアントスクリプト (CDN) -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://localhost:4000');
+
+    socket.on('connect', () => {
+      console.log('Socket connected! ID:', socket.id);
+    });
+
+    const fileInput = document.getElementById('fileInput');
+    const labelInput = document.getElementById('labelInput');
+    const sendBtn   = document.getElementById('sendBtn');
+
+    sendBtn.addEventListener('click', () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('No file selected!');
+        return;
+      }
+
+      const label = labelInput.value || 'no-label';
+
+      // FileReaderで画像ファイルをBase64に変換
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataURL = reader.result; // "data:image/png;base64,..." のような文字列
+        // Socket.IO で送信
+        socket.emit('send_training_data', {
+          label: label,
+          imageBase64: dataURL
+        });
+        console.log('送信データ:', { label, imageBase64: dataURL.slice(0, 50) + '...' });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // サーバーからの応答
+    socket.on('send_training_data_success', (res) => {
+      console.log('サーバーからのレスポンス:', res);
+    });
+  </script>
+</body>
+</html>
+
