@@ -69,7 +69,7 @@ function Camera2({ label }) {
 
   return (
     <div style={{ padding: "20px" }}>
-      <button onClick={() => navigate('/')}>ホームに戻る</button>
+      
       <button onClick={() => navigate('/page2/labelselect')}>ラベル選択に戻る</button>
       <h2>選択されたラベル: {label}</h2>
 
