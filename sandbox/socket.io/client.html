@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Socket.IO Client Example</title>
+</head>
+<body>
+  <h1>Socket.IO Test</h1>
+  
+  <!-- Socket.IO クライアントのスクリプト (CDN) -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+  <script>
+    // サーバーに接続 (localhost:3000)
+    const socket = io('http://localhost:3000');
+
+    // 接続成功時
+    socket.on('connect', () => {
+      console.log('Socket connected! ID:', socket.id);
+      
+      // 例: 教師データを送信してみる
+      socket.emit('send_training_data', {
+        user: 'userA',
+        values: [1, 2, 3, 4],
+        labels: [0, 1, 0, 1]
+      });
+    });
+
+    // サーバーから「教師データを受信しました」メッセージを受け取る例
+    socket.on('send_training_data_success', (msg) => {
+      console.log('サーバーからのレスポンス:', msg);
+    });
+
+    // ボタンなどで「教師データを要求」イベントを送る例
+    // ここでは簡単にページ読み込み後すぐ送信する
+    socket.emit('request_training_data');
+
+    // サーバーから実際の教師データが返ってくるイベント
+    socket.on('receive_training_data', (allData) => {
+      console.log('サーバーから受信した教師データ一覧:', allData);
+    });
+  </script>
+</body>
+</html>
+
