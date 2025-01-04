@@ -1,0 +1,6 @@
+fastapi
+python-socketio
+aiortc
+ultralytics
+opencv-python-headless
+uvicorn
