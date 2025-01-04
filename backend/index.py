@@ -19,6 +19,9 @@ class FastApiServer:
             allow_methods=["*"],
             allow_headers=["*"],
         )
+        @self.app.get("/hello")
+        async def root():
+            return {"message": "Hello World From Fast API"}
 
 
 from socketio.async_server import AsyncServer
