@@ -12,8 +12,16 @@ function Labelselect() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedLabels = JSON.parse(localStorage.getItem('labels')) || [];
-    setLabelList(storedLabels);
+    const apiUrl = process.env.REACT_APP_API_URL;
+    fetch(apiUrl + "/api/v1/items") // FastAPIのエンドポイント
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch items");
+        }
+        return response.json();
+      })
+      .then((data) => setLabelList(data.items))
+      .catch((err) => console.log(err.message));
 }, []);
 
   // ラベルを選択したときの処理
