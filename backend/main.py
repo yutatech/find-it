@@ -19,7 +19,7 @@ class FastApiServer:
             allow_methods=["*"],
             allow_headers=["*"],
         )
-        @self.app.get("/hello")
+        @self.app.get("/")
         async def root():
             return {"message": "Hello World From Fast API"}
 
