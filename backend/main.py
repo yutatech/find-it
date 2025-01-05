@@ -3,6 +3,7 @@ from modules.socket_server import SocketServer
 from modules.web_rtc_server import WebRtcServer
 from modules.vision_processor import VisionProcessor
 from modules.frontend_server import FrontendServer
+from modules.database import DataBase
 
 
 if __name__ == "__main__":
@@ -18,6 +19,9 @@ if __name__ == "__main__":
 
     frontend_server = FrontendServer()
     frontend_server.set_handlers(server.app)
+
+    database = DataBase()
+    database.set_handlers(server.app)
 
     import uvicorn
 
