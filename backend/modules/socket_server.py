@@ -14,4 +14,4 @@ class SocketServer:
         )
 
     def set_handlers(self, app: FastAPI):
-        app.mount("/", ASGIApp(self.sio))
+        app.mount("/socket/", ASGIApp(self.sio))
