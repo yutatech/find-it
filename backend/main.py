@@ -24,21 +24,21 @@ class FastApiServer:
             return {"message": "Hello World From Fast API"}
 
 
-from socketio.async_server import AsyncServer
-from socketio.asgi import ASGIApp
+# from socketio.async_server import AsyncServer
+# from socketio.asgi import ASGIApp
 
 
-class SocketServer:
+# class SocketServer:
 
-    def __init__(self, allow_origins: list[str]):
-        # Socket.IOサーバーの設定
-        self.sio = AsyncServer(
-            async_mode="asgi",
-            cors_allowed_origins=allow_origins,
-        )
+#     def __init__(self, allow_origins: list[str]):
+#         # Socket.IOサーバーの設定
+#         self.sio = AsyncServer(
+#             async_mode="asgi",
+#             cors_allowed_origins=allow_origins,
+#         )
 
-    def set_handlers(self, app: FastAPI):
-        app.mount("/", ASGIApp(self.sio))
+#     def set_handlers(self, app: FastAPI):
+#         app.mount("/", ASGIApp(self.sio))
 
 
 # from aiortc import RTCPeerConnection, RTCSessionDescription, RTCIceCandidate, RTCConfiguration, RTCIceServer
@@ -235,8 +235,8 @@ class SocketServer:
 
 if __name__ == "__main__":
     server = FastApiServer(allow_origins=["https://yuta-air.local:3000"])
-    socket_server = SocketServer(allow_origins=["https://yuta-air.local:3000"])
-    socket_server.set_handlers(server.app)
+    # socket_server = SocketServer(allow_origins=["https://yuta-air.local:3000"])
+    # socket_server.set_handlers(server.app)
     # web_rtc_server = WebRtcServer()
     # web_rtc_server.set_handlers(socket_server.sio)
     # vision_processor = VisionProcessor()

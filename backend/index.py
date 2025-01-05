@@ -9,7 +9,7 @@
 import main
 
 server = main.FastApiServer(allow_origins=["https://yuta-air.local:3000"])
-socket_server = main.SocketServer(allow_origins=["https://yuta-air.local:3000"])
-socket_server.set_handlers(server.app)
+# socket_server = main.SocketServer(allow_origins=["https://yuta-air.local:3000"])
+# socket_server.set_handlers(server.app)
 
 app = server.app
