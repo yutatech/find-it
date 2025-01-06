@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './component/Home/Home';
 import Page1 from './component/LearningPhase/Page1';
@@ -13,8 +13,11 @@ import Header from './component/SharedComponents/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { SocketRefProvider } from './modules/SocketRefContext';
+import useLocalVideo from './hooks/useLocalVideo';
 
 function App() {
+  const { localStreamRef, isLocalStreamReady, videoSize } = useLocalVideo();
+
   return (
     <Router>
       <div style={{ position: "relative", minHeight: "100vh" }}>
@@ -28,7 +31,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/page1" element={<Page1 />} />
             <Route path="/page2" element={<Labelselect />} />
-            <Route path="/page2/camera" element={<Camera2 />} />
+            <Route path="/page2/camera" element={<Camera2 streamRef={localStreamRef} isStreamReady={isLocalStreamReady} canvasSize={videoSize}/>} />
             <Route path="/page1/addphoto" element={<AddPhoto />} />
             <Route path="/page1/labelmanagement" element={<LabelManagement />} />
             <Route path="/page1/editphoto" element={<EditPhoto />} />
