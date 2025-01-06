@@ -1,5 +1,18 @@
 # find-it
 
+## Setup
+```shell
+pip install fastapi python-socketio aiortc ultralytics opencv-python uvicorn
+sudo apt install -y nodejs npm
+```
+
+## Build & Run
+```shell
+cd find-it
+build.sh
+run.sh
+```
+
 ## Contributors
 - Fujiyama Yuta / 藤山優太
 - Koizumi Momoko / 小泉桃子
