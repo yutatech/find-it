@@ -6,7 +6,7 @@ class VisionProcessor:
     def __init__(self):
         self.counter = 0
         # self.model = torch.hub.load("ultralytics/yolov8", "yolov8")
-        self.model = YOLO("yolo11n.pt")
+        self.model = YOLO("find_it_model.pt")
         print('load model complete')
     
     def on_frame_received(self, sid, frame):
