@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
-function Camera2({ streamRef, isStreamReady, canvasSize }) {
+function Camera({ streamRef, isStreamReady, canvasSize }) {
   const videoRef = useRef(null); // video要素への参照
   const canvasRef = useRef(null); // canvas要素への参照
   const navigate = useNavigate();
@@ -42,4 +42,4 @@ function Camera2({ streamRef, isStreamReady, canvasSize }) {
   );
 }
 
-export default Camera2;
+export default Camera;
