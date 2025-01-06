@@ -4,11 +4,15 @@ from modules.web_rtc_server import WebRtcServer
 from modules.vision_processor import VisionProcessor
 from modules.frontend_server import FrontendServer
 from modules.database import DataBase
+import socket
 
 
 if __name__ == "__main__":
-    server = FastApiServer(allow_origins=["https://yuta-air.local:3000"])
-    socket_server = SocketServer(allow_origins=["https://yuta-air.local:3000"])
+    hostname = socket.gethostname()
+    print(f"https://{hostname}:3000")
+    
+    server = FastApiServer(allow_origins=["https://localhost:3000", f"https://{hostname}:3000"])
+    socket_server = SocketServer(allow_origins=["https://localhost:3000", f"https://{hostname}:3000"])
     socket_server.set_handlers(server.app)
 
     web_rtc_server = WebRtcServer()
