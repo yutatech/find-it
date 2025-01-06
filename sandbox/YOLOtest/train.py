@@ -1,12 +1,11 @@
 from ultralytics import YOLO
 
 # 元のYOLOモデルをロード（事前学習済みのモデル）
-base_model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/watch_glasses_remote.pt')  # デフォルトYOLOモデル (例: YOLOv8 Nano)
-print(base_model.names)
+base_model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/yolov8n.pt')  # デフォルトYOLOモデル (例: YOLOv8 Nano)
 
 # 新しいデータセットで追加学習
 results = base_model.train(
-    data= r'/mnt/c/Users/shingo/YOLO/remote2/data.yaml',  # 新しいデータセットのdata.yaml
+    data= r'/mnt/c/Users/shingo/YOLO/dataset/data.yaml',  # 新しいデータセットのdata.yaml
     epochs=50,  # 追加学習するエポック数
     imgsz=640,  # 画像サイズ
     device='cpu',  # 'cpu' または 'cuda'（GPU使用の場合）
