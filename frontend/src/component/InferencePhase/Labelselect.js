@@ -28,7 +28,7 @@ function Labelselect() {
   const handleLabelChange = (event, newValue) => {
     if (newValue) {
       setLabel(newValue);
-      navigate("/page2/camera",{state:{label: newValue}});
+      navigate("/InferencePhasePage/camera",{state:{label: newValue}});
     }
   };
   
