@@ -8,8 +8,8 @@ const Header = () => (
     <Navbar.Toggle aria-controls="basic-navbar-nav" />
     <Navbar.Collapse id="basic-navbar-nav">
       <Nav className="ml-auto">
-        <Nav.Link as={Link} to="/page1">学習フェーズ</Nav.Link>
-        <Nav.Link as={Link} to="/page2">推論フェーズ</Nav.Link>
+        <Nav.Link as={Link} to="/LearningPhasePage">学習フェーズ</Nav.Link>
+        <Nav.Link as={Link} to="/InferencePhasePage/Labelselect">推論フェーズ</Nav.Link>
       </Nav>
     </Navbar.Collapse>
   </Navbar>

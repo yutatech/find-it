@@ -1,12 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './component/Home/Home';
-import Page1 from './component/LearningPhase/Page1';
+import LearningPhasePage from './component/LearningPhase/LearningPhasePage';
 import AddPhoto from './component/LearningPhase/TeacherData/AddPhoto';
 import LabelManagement from './component/LearningPhase/TeacherData/LabelManagement';
 import EditPhoto from './component/LearningPhase/TeacherData/EditPhoto';
 import Labelselect from './component/InferencePhase/Labelselect';
-import Camera2 from './component/InferencePhase/Camera2';
+import Camera from './component/InferencePhase/Camera';
 import Logo from "./component/SharedComponents/Logo";
 import Header from './component/SharedComponents/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -28,13 +27,13 @@ function Component() {
         <Logo />
           {/* ルーティング設定 */}
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/page1" element={<Page1 />} />
-            <Route path="/page2" element={<Labelselect />} />
-            <Route path="/page2/camera" element={<Camera2 streamRef={localStreamRef} isStreamReady={isLocalStreamReady} canvasSize={videoSize}/>} />
-            <Route path="/page1/addphoto" element={<AddPhoto />} />
-            <Route path="/page1/labelmanagement" element={<LabelManagement />} />
-            <Route path="/page1/editphoto" element={<EditPhoto />} />
+            <Route path="/" element={<LearningPhasePage />} />
+            <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
+            <Route path="/InferencePhasePage/Labelselect" element={<Labelselect />} />
+            <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} canvasSize={videoSize}/>} />
+            <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
+            <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
+            <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />
           </Routes>
       </div>
     </Router>

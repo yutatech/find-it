@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from "react";
 // import Camera from "./Camera"; // カメラコンポーネントをインポート
-import Camera2 from "./Camera2"; // カメラコンポーネントをインポート
+import Camera from "./Camera"; // カメラコンポーネントをインポート
 import { Autocomplete, TextField} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ function Labelselect() {
   const handleLabelChange = (event, newValue) => {
     if (newValue) {
       setLabel(newValue);
-      navigate("/page2/camera",{state:{label: newValue}});
+      navigate("/InferencePhasePage/camera",{state:{label: newValue}});
     }
   };
   
@@ -50,7 +50,7 @@ function Labelselect() {
         </div>
       ) : (
         // カメラコンポーネントを表示
-        <Camera2 label={selectedLabel} />
+        <Camera label={selectedLabel} />
       )}
     </div>
   );
