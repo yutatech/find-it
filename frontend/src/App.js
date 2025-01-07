@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LearningPhasePage from './component/LearningPhase/LearningPhasePage';
 import AddPhoto from './component/LearningPhase/TeacherData/AddPhoto';
@@ -12,9 +12,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { SocketRefProvider } from './modules/SocketRefContext';
 import useLocalVideo from './hooks/useLocalVideo';
+import useWebRtc from './hooks/useWebRtc';
 
-function App() {
+
+function Component() {
   const { localStreamRef, isLocalStreamReady, videoSize } = useLocalVideo();
+  const { isConnected, setupWebRtc } = useWebRtc(localStreamRef, isLocalStreamReady);
 
   return (
     <Router>
@@ -22,22 +25,29 @@ function App() {
         {/* 常に右上に表示されるロゴ */}
         <Header /> 
         <Logo />
-        {/* Socket通信のインスタンスを全体で共有 */}
-        <SocketRefProvider>
           {/* ルーティング設定 */}
           <Routes>
             <Route path="/" element={<LearningPhasePage />} />
-            <Route path="/learningphasepage" element={<LearningPhasePage />} />
-            <Route path="/inferencephasepage/labelselect" element={<Labelselect />} />
-            <Route path="/inferencephasepage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} canvasSize={videoSize}/>} />
-            <Route path="/learningphasepage/addphoto" element={<AddPhoto />} />
-            <Route path="/learningphasepage/labelmanagement" element={<LabelManagement />} />
-            <Route path="/learningphasepage/editphoto" element={<EditPhoto />} />
+            <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
+            <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
+            <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} videoSize={videoSize}/>} />
+            <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
+            <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
+            <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />
           </Routes>
-        </SocketRefProvider>
       </div>
     </Router>
+  );
+}
 
+function App() {
+  return (
+    <>
+      {/* Socket通信のインスタンスを全体で共有 */}
+      <SocketRefProvider>
+        <Component />
+      </SocketRefProvider>
+    </>
   );
 }
 
