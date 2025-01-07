@@ -1,11 +1,14 @@
-import { useEffect, useContext } from "react";
+import { useRef, useContext } from "react";
 import { SocketRefContext } from "../modules/SocketRefContext";
 
-const useResultReceiver = (drawResult) => {
+const useResultReceiver = () => {
   const socketRef = useContext(SocketRefContext);
+  const onGetResultRef = useRef(null);
 
   const handleResult = (result) => {
-    drawResult(result);
+    if (onGetResultRef.current) {
+      onGetResultRef.current(result);
+    }
   };
 
   const setSocketHandlers = () => {
@@ -23,7 +26,11 @@ const useResultReceiver = (drawResult) => {
     socketRef.current.off("result");
   }
 
-  return { setupResultReceiver, deleteResultReceiver };
+  const setOnGetResult = (onGetResult) => {
+    onGetResultRef.current = onGetResult;
+  }
+
+  return { setupResultReceiver, deleteResultReceiver, setOnGetResult };
 };
 
 export default useResultReceiver;
