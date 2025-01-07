@@ -23,13 +23,13 @@ function Component() {
     <Router>
       <div style={{ position: "relative", minHeight: "100vh" }}>
         {/* 常に右上に表示されるロゴ */}
-        <Header />
+        <Header /> 
         <Logo />
           {/* ルーティング設定 */}
           <Routes>
             <Route path="/" element={<LearningPhasePage />} />
             <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
-            <Route path="/InferencePhasePage/Labelselect" element={<Labelselect />} />
+            <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
             <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} videoSize={videoSize}/>} />
             <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
             <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />

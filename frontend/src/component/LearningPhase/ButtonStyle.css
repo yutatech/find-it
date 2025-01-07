@@ -1,0 +1,20 @@
+/* ButtonStyle.css */
+.add-photo-button {
+  background-color: #4c89af;  /* 緑色の背景 */
+  color: white;                /* 文字を白に */
+  padding: 10px 20px;          /* ボタンの内側の余白 */
+  border: none;                /* 枠線を削除 */
+  border-radius: 30px;         /* 丸いボタン */
+  font-size: 16px;             /* フォントサイズ */
+  cursor: pointer;             /* カーソルをポインターに */
+  transition: background-color 0.3s, transform 0.3s;  /* ホバー時のアニメーション */
+}
+
+.add-photo-button:hover {
+  background-color: #4c89af;   /* ホバー時の背景色 */
+  transform: scale(1.05);       /* ホバー時に少し大きくなる */
+}
+
+.add-photo-button:focus {
+  outline: none;               /* フォーカス時のアウトラインを消す */
+}

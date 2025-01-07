@@ -25,11 +25,13 @@ function Labelselect() {
       .catch((err) => console.log(err.message));
 }, []);
 
+
+
   // ラベルを選択したときの処理
   const handleLabelChange = (event, newValue) => {
     if (newValue) {
       setLabel(newValue);
-      navigate("/InferencePhasePage/camera",{state:{label: newValue}});
+      navigate("/inferencephasepage/camera",{state:{label: newValue}});
     }
   };
   
