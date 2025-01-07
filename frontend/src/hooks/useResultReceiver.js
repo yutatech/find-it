@@ -19,7 +19,11 @@ const useResultReceiver = (drawResult) => {
     setSocketHandlers();
   }
 
-  return { setupResultReceiver };
+  const deleteResultReceiver = () => {
+    socketRef.current.removeListener("result");
+  }
+
+  return { setupResultReceiver, deleteResultReceiver };
 };
 
 export default useResultReceiver;

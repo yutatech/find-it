@@ -12,13 +12,17 @@ function Camera({ streamRef, isStreamReady, videoSize }) {
   const label = location.state?.label;
 
   const { drawResult, clearCanvas, canvasSize } = useResultDrawer(canvasRef, videoSize);
-  const { setupResultReceiver } = useResultReceiver(drawResult);
+  const { setupResultReceiver, deleteResultReceiver } = useResultReceiver(drawResult);
 
   useEffect(() => {
     videoRef.current.srcObject = streamRef.current;
 
     // ResultDrawerの初期化
     setupResultReceiver();
+
+    return () => {
+      deleteResultReceiver();
+    };
   }, [isStreamReady]);
 
   return (
