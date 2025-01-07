@@ -20,7 +20,7 @@ const useResultReceiver = (drawResult) => {
   }
 
   const deleteResultReceiver = () => {
-    socketRef.current.removeListener("result");
+    socketRef.current.off("result");
   }
 
   return { setupResultReceiver, deleteResultReceiver };
