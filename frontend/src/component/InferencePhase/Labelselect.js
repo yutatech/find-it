@@ -12,6 +12,7 @@ function Labelselect() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // itemsの取得
     const apiUrl = process.env.REACT_APP_API_URL;
     fetch(apiUrl + "/api/v1/items") // FastAPIのエンドポイント
       .then((response) => {

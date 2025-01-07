@@ -1,17 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 
+import useResultReceiver from "../../hooks/useResultReceiver";
+import useResultDrawer from "../../hooks/useResultDrawer";
 
-function Camera({ streamRef, isStreamReady, canvasSize }) {
+function Camera({ streamRef, isStreamReady, videoSize }) {
   const videoRef = useRef(null); // video要素への参照
   const canvasRef = useRef(null); // canvas要素への参照
   const navigate = useNavigate();
   const location = useLocation();
   const label = location.state?.label;
 
+  const { drawResult, clearCanvas, canvasSize } = useResultDrawer(canvasRef, videoSize);
+  const { setupResultReceiver } = useResultReceiver(drawResult);
 
   useEffect(() => {
     videoRef.current.srcObject = streamRef.current;
+
+    // ResultDrawerの初期化
+    setupResultReceiver();
   }, [isStreamReady]);
 
   return (

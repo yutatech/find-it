@@ -30,7 +30,7 @@ function Component() {
             <Route path="/" element={<LearningPhasePage />} />
             <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
             <Route path="/InferencePhasePage/Labelselect" element={<Labelselect />} />
-            <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} canvasSize={videoSize}/>} />
+            <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} videoSize={videoSize}/>} />
             <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
             <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
             <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />

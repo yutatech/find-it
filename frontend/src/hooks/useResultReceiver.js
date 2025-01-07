@@ -1,6 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { SocketRefContext } from "../modules/SocketRefContext";
 
-const useResultReceiver = (socketRef, drawResult) => {
+const useResultReceiver = (drawResult) => {
+  const socketRef = useContext(SocketRefContext);
+
   const handleResult = (result) => {
     drawResult(result);
   };
