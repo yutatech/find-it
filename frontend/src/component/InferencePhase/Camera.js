@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import useResultReceiver from "../../hooks/useResultReceiver";
 import ResultView from "./ResultView";
+import useOpticalFlow from "../../hooks/useOpticalFlow";
 
 function Camera({ streamRef, isStreamReady }) {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function Camera({ streamRef, isStreamReady }) {
   const label = location.state?.label;
 
   const { setupResultReceiver, deleteResultReceiver, setOnGetResult } = useResultReceiver();
+  const { onUpdate } = useOpticalFlow(streamRef, isStreamReady);
 
   useEffect(() => {
     // ResultDrawerの初期化

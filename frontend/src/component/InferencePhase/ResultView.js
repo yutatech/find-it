@@ -99,6 +99,12 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult }) => {
         height={canvasSize.height}
         style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
       />
+      <canvas
+        id="canvasOutput"
+        width={canvasSize.width}
+        height={canvasSize.height}
+        style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
+      />
     </div>
   );
 };
