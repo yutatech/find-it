@@ -39,6 +39,7 @@ jobs:
         npm run build
       env:
         CI: false
+        REACT_APP_API_URL: ${{ secrets.DEPLOY_HOST_NAME }}
 
     # SSH接続の準備
     - name: Set up SSH
