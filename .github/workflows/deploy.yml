@@ -52,17 +52,24 @@ jobs:
       run: |
         scp -r -o StrictHostKeyChecking=no frontend/build  ${{ secrets.DEPLOY_USER_NAME }}@${{ secrets.DEPLOY_HOST_NAME }}:~/find-it/backend
         ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER_NAME }}@${{ secrets.DEPLOY_HOST_NAME }} << 'EOF'
+        
         # デプロイ先ディレクトリへ移動
-        cd ~/find-it/backend
+        cd ~/find-it/backend&&
 
         # 現在のプロセスを停止（プロセス管理ツールを使用）
-        pkill -f main.py || true
+        pkill -f main.py || true&&
 
         # 最新ファイルを取得
-        git checkout main
+        BRANCH_NAME=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')&&
+        git checkout $BRANCH_NAME&&
         git pull
-        ../.build
-
-        # スクリプトを再起動
-        nohup python3 main.py > output.log 2>&1 &
         EOF
+
+    - name: Start Python Script
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER_NAME }}@${{ secrets.DEPLOY_HOST_NAME }} "
+        set -x &&
+        source ~/find-it/venv/bin/activate &&
+        cd ~/find-it/backend &&
+        (nohup python3 main.py > output.log 2>&1 &) &&
+        exit"

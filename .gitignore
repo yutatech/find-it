@@ -2,3 +2,4 @@
 *.js:Zone.Identifier
 __pycache__/
 venv/
+backend/output.log

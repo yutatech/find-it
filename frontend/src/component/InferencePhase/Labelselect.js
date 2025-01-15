@@ -14,7 +14,7 @@ function Labelselect() {
   useEffect(() => {
     // itemsの取得
     const apiUrl = process.env.REACT_APP_API_URL;
-    fetch(apiUrl + "/api/v1/items") // FastAPIのエンドポイント
+    fetch("https://" + apiUrl + "/api/v1/items") // FastAPIのエンドポイント
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch items");
