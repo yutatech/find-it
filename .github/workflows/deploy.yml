@@ -15,6 +15,31 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    # Node.js のセットアップ
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'  # 必要なNode.jsのバージョンを指定
+
+    
+    # npm の依存関係をキャッシュ
+    - name: Cache npm dependencies
+      uses: actions/cache@v3
+      with:
+        path: frontend/node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    # npm install と npm build を実行
+    - name: Install dependencies and build
+      run: |
+        cd frontend
+        npm install
+        npm run build
+      env:
+        CI: false
+
     # SSH接続の準備
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
@@ -24,6 +49,7 @@ jobs:
     # サーバーにPythonスクリプトをデプロイ
     - name: Deploy to Server
       run: |
+        scp -r -o StrictHostKeyChecking=no frontend/build  ${{ secrets.DEPLOY_USER_NAME }}@${{ secrets.DEPLOY_HOST_NAME }}:~/find-it/backend
         ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER_NAME }}@${{ secrets.DEPLOY_HOST_NAME }} << 'EOF'
         # デプロイ先ディレクトリへ移動
         cd ~/find-it/backend
