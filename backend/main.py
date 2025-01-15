@@ -28,8 +28,5 @@ if __name__ == "__main__":
     uvicorn.run(
         server.app,
         host="0.0.0.0",
-        port=443,
-        ssl_certfile=f"/etc/letsencrypt/live/{server_url}/fullchain.pem",
-        ssl_keyfile=f"/etc/letsencrypt/live/{server_url}/privkey.pem",
         log_level="debug",
     )
