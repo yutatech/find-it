@@ -4,4 +4,4 @@
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 cd $SCRIPT_DIR/backend
-python3 main.py
+python3 main_debug.py

@@ -1,0 +1,75 @@
+name: Deploy Python Script
+
+on:
+  push:
+    branches:
+      - main  # mainブランチにプッシュされたときに実行
+      - feat/main-py-for-release-server
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # リポジトリをチェックアウト
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Node.js のセットアップ
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'  # 必要なNode.jsのバージョンを指定
+
+    
+    # npm の依存関係をキャッシュ
+    - name: Cache npm dependencies
+      uses: actions/cache@v3
+      with:
+        path: frontend/node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    # npm install と npm build を実行
+    - name: Install dependencies and build
+      run: |
+        cd frontend
+        npm install
+        npm run build
+      env:
+        CI: false
+        REACT_APP_API_URL: https://${{ secrets.DEPLOY_HOST_NAME }}
+
+    # SSH接続の準備
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+    # サーバーにPythonスクリプトをデプロイ
+    - name: Deploy to Server
+      run: |
+        scp -r -o StrictHostKeyChecking=no frontend/build  ${{ secrets.DEPLOY_USER_NAME }}@${{ secrets.DEPLOY_HOST_NAME }}:~/find-it/backend
+        ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER_NAME }}@${{ secrets.DEPLOY_HOST_NAME }} << 'EOF'
+        
+        # デプロイ先ディレクトリへ移動
+        cd ~/find-it/backend&&
+
+        # 現在のプロセスを停止（プロセス管理ツールを使用）
+        pkill -f main.py || true&&
+
+        # 最新ファイルを取得
+        BRANCH_NAME=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')&&
+        git checkout $BRANCH_NAME&&
+        git pull
+        EOF
+
+    - name: Start Python Script
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER_NAME }}@${{ secrets.DEPLOY_HOST_NAME }} "
+        set -x &&
+        source ~/find-it/venv/bin/activate &&
+        cd ~/find-it/backend &&
+        (nohup python3 main.py > output.log 2>&1 &) &&
+        exit"

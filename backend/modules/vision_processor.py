@@ -17,8 +17,8 @@ class VisionProcessor:
             img = frame.to_ndarray(format="rgb24")
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             
-            cv2.imshow("Received Video", img)
-            cv2.waitKey(1)  # OpenCVでフレーム表示を更新
+            # cv2.imshow("Received Video", img)
+            # cv2.waitKey(1)  # OpenCVでフレーム表示を更新
             results = self.model(img)
         except Exception as e:
             print("Error VisionProcessor.on_frame_received():", e)

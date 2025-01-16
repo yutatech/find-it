@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 class FastApiServer:
 
-    def __init__(self, allow_origins: list[str]):
+    def __init__(self, allow_origins: list[str] = []):
         """_summary_
 
         Args:
@@ -19,4 +19,3 @@ class FastApiServer:
             allow_methods=["*"],
             allow_headers=["*"],
         )
-    

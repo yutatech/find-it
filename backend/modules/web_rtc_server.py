@@ -1,6 +1,7 @@
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCIceCandidate, RTCConfiguration, RTCIceServer
 from aiortc.rtcrtpreceiver import RemoteStreamTrack
 from socketio.async_server import AsyncServer
+import asyncio
 
 class WebRtcServer:
     def __init__(self):
@@ -74,29 +75,6 @@ class WebRtcServer:
         }
 
     async def sio_handle_ice(self, sid, ice: dict):
-        # if sid not in self.pcs:
-        #     print("Error WebRtcServer.handle_ice(): unknown sid")
-        #     return
-        # pc: RTCPeerConnection = self.pcs[sid]
-
-        # ip = ice['candidate'].split(' ')[4]
-        # port = ice['candidate'].split(' ')[5]
-        # protocol = ice['candidate'].split(' ')[7]
-        # priority = ice['candidate'].split(' ')[3]
-        # foundation = ice['candidate'].split(' ')[0]
-        # component = ice['candidate'].split(' ')[1]
-        # protocol_type = ice['candidate'].split(' ')[7]
-        # ice_candidate = RTCIceCandidate(ip=ip,
-        #                                 port=port,
-        #                                 protocol=protocol,
-        #                                 priority=priority,
-        #                                 foundation=foundation,
-        #                                 component=component,
-        #                                 type=protocol_type,
-        #                                 sdpMid=ice['sdpMid'],
-        #                                 sdpMLineIndex=ice['sdpMLineIndex'])
-        # await pc.addIceCandidate(ice_candidate)
-        # self.ice_candidates.append(ice_candidate)
         await self.sio.emit("ice_candidate", ice, to=sid)
 
     async def pc_handle_icecandidate(self, sid, pc: RTCPeerConnection,
@@ -104,17 +82,18 @@ class WebRtcServer:
         await self.sio.emit("ice", candidate, to=sid)
 
     async def pc_handle_track(self, sid, pc: RTCPeerConnection,
-                              track: RemoteStreamTrack):
+                                track: RemoteStreamTrack):
         if track.kind == "video":
             while True:
                 try:
                     frame = await track.recv()
                     print(frame.dts, frame.pts, frame.time, frame.time_base)
                     # continue
-                    if (track._queue.empty()):
+                    if track._queue.empty():
                         if self.on_frame_received is not None:
                             result = self.on_frame_received(sid, frame)
                             await self.sio.emit("result", result, to=sid)
+                            await asyncio.sleep(0.01)
                 except Exception as e:
                     print("Error WebRtcServer.pc_handle_track():", e)
                     break

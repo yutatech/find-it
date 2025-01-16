@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 class SocketServer:
 
-    def __init__(self, allow_origins: list[str]):
+    def __init__(self, allow_origins: list[str] = []):
         # Socket.IOサーバーの設定
         self.sio = AsyncServer(
             async_mode="asgi",
