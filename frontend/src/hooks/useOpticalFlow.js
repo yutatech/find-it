@@ -81,10 +81,10 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
     const settings = videoTrack.getSettings();
     console.log(settings.width, settings.height);
 
-    video.height = settings.height;
-    video.width = settings.width;
+    video.height = settings.height / 3;
+    video.width = settings.width / 3;
 
-    let frame1 = new cv.Mat(settings.height, settings.width, cv.CV_8UC4);
+    let frame1 = new cv.Mat(video.height, video.width, cv.CV_8UC4);
     cap.read(frame1);
     cv.cvtColor(frame1, prvImgRef.current, cv.COLOR_RGBA2GRAY);
     frame1.delete();
