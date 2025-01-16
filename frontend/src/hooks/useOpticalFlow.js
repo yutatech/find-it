@@ -1,9 +1,5 @@
 import { useRef, useEffect, use } from "react";
 
-// window.cv.onRuntimeInitialized = () => {
-//   console.log('OpenCV.js is ready! 2');
-// };
-
 const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
   const cvRef = useRef(window.cv);
   const playingRef = useRef(false);
@@ -18,6 +14,11 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
 
   useEffect(() => {
     if (isVideoStreamReady) {
+      if (cvRef.current.getBuildInformation !== undefined) {
+        console.log('OpenCV.js is already initilized!');
+        cvReadyRef.current = true;
+      }
+
       const videoElement = document.createElement("video");
       videoElement.playsInline = true;
       videoElement.srcObject = videoStreamRef.current;
