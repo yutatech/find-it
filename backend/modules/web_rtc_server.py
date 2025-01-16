@@ -111,6 +111,7 @@ class WebRtcServer:
                     frame = await track.recv()
                     print(frame.dts, frame.pts, frame.time, frame.time_base)
                     # continue
+                    track.wait_for_complete()
                     if (track._queue.empty()):
                         if self.on_frame_received is not None:
                             result = self.on_frame_received(sid, frame)
