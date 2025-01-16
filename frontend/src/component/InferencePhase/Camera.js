@@ -11,7 +11,7 @@ function Camera({ streamRef, isStreamReady }) {
   const label = location.state?.label;
 
   const { setupResultReceiver, deleteResultReceiver, setOnGetResult } = useResultReceiver();
-  const { onUpdate } = useOpticalFlow(streamRef, isStreamReady);
+  const { onUpdatev, flowArrowRef } = useOpticalFlow(streamRef, isStreamReady);
 
   useEffect(() => {
     // ResultDrawerの初期化

@@ -94,6 +94,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult }) => {
       />
       {/* Canvas */}
       <canvas
+        id="canvasDraw"
         ref={canvasRef}
         width={canvasSize.width}
         height={canvasSize.height}

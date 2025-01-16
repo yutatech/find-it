@@ -5,6 +5,7 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
   const playingRef = useRef(false);
   const cvReadyRef = useRef(false);
   const videoRef = useRef(null);
+  const flowArrowRef = useRef(null);
 
   // OpenCV の初期化完了を待つ
   cvRef.current.onRuntimeInitialized = () => {
@@ -47,7 +48,6 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
   const onUpdate = () => {
     if (playingRef.current) {
       if (cvReadyRef.current) {
-        console.log("cvReady");
         calcOpticalFlow();
       }
       window.requestAnimationFrame(onUpdate);
@@ -107,6 +107,28 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
     rgbRef.current = new cv.Mat(video.height, video.width, cv.CV_8UC3);
   }
 
+  function calculateMedian(mat) {
+    // 1. Matを1次元配列に変換
+    let data = mat.data32F; // ここでは32ビット浮動小数点型のデータを使用しています。適宜型を変更してください。
+
+    // 2. 配列をソート
+    let sortedData = Array.from(data).sort((a, b) => a - b);
+    
+    // 3. 中央値を計算
+    let middle = Math.floor(sortedData.length / 2);
+    let median;
+
+    if (sortedData.length % 2 === 0) {
+        // 偶数個の要素の場合、中央の2つの要素の平均
+        median = (sortedData[middle - 1] + sortedData[middle]) / 2;
+    } else {
+        // 奇数個の要素の場合、中央の要素
+        median = sortedData[middle];
+    }
+
+    return median;
+  }
+
   const calcOpticalFlow = () => {
     if (cvReadyRef.current) {
       // try {
@@ -121,8 +143,18 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
           cv.split(flowRef.current, flowVecRef.current);
           let u = flowVecRef.current.get(0);
           let v = flowVecRef.current.get(1);
-          // console.log(u)
+          // console.log(calculateMedian(u), calculateMedian(v))
+          flowArrowRef.current = {x: calculateMedian(u), y: calculateMedian(v)};
 
+          const canvas = document.getElementById("canvasDraw");
+          const ctx = canvas.getContext("2d");
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = "red";
+          ctx.beginPath();
+          console.log(flowArrowRef.current.x)
+          ctx.moveTo(canvas.width/2, canvas.height/2);
+          ctx.lineTo(canvas.width/2 + flowArrowRef.current.x * 10, canvas.height/2 + flowArrowRef.current.y * 10);
+          ctx.stroke();
 
           cv.cartToPolar(u, v, magRef.current, angRef.current);
           u.delete(); v.delete();
@@ -139,7 +171,7 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
     }
   };
 
-  return { onUpdate };
+  return { onUpdate, flowArrowRef };
 };
 
 export default useOpticalFlow;
