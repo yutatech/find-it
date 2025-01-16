@@ -5,4 +5,5 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 npm --prefix $SCRIPT_DIR/frontend install
 npm --prefix $SCRIPT_DIR/frontend run build
+rm -rf $SCRIPT_DIR/backend/build
 mv $SCRIPT_DIR/frontend/build $SCRIPT_DIR/backend/
