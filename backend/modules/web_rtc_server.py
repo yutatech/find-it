@@ -1,6 +1,7 @@
 from aiortc import RTCPeerConnection, RTCSessionDescription, RTCIceCandidate, RTCConfiguration, RTCIceServer
 from aiortc.rtcrtpreceiver import RemoteStreamTrack
 from socketio.async_server import AsyncServer
+import asyncio
 
 class WebRtcServer:
     def __init__(self):
@@ -106,16 +107,35 @@ class WebRtcServer:
     async def pc_handle_track(self, sid, pc: RTCPeerConnection,
                               track: RemoteStreamTrack):
         if track.kind == "video":
+            frame_processing_lock = asyncio.Lock()  # 排他制御用のロックを作成
+            async def handle_frame_in_background(sid, frame):
+                """
+                フレームの処理をバックグラウンドで行い、結果をクライアントに送信します。
+                """
+                try:
+                    # `on_frame_received` を実行
+                    result = self.on_frame_received(sid, frame)
+                    
+                    # 結果をクライアントに送信
+                    await self.sio.emit("result", result, to=sid)
+                except Exception as e:
+                    print("Error WebRtcServer.handle_frame_in_background():", e)
+                    
+                
             while True:
                 try:
+                    # 1. フレームを受信
                     frame = await track.recv()
                     print(frame.dts, frame.pts, frame.time, frame.time_base)
-                    # continue
-                    track.wait_for_complete()
-                    if (track._queue.empty()):
+                    
+                    # 2. タスクを処理済みにする
+                    track._queue.task_done()
+                    
+                    # 3. キューが空の場合に `on_frame_received` を別スレッドで実行
+                    if track._queue.empty():
                         if self.on_frame_received is not None:
-                            result = self.on_frame_received(sid, frame)
-                            await self.sio.emit("result", result, to=sid)
+                            async with frame_processing_lock:
+                                await handle_frame_in_background(sid, frame)
                 except Exception as e:
                     print("Error WebRtcServer.pc_handle_track():", e)
                     break
