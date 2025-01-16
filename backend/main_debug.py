@@ -33,10 +33,10 @@ def get_host_name():
 if __name__ == "__main__":
     hostname = get_host_name()
     server = FastApiServer(
-        allow_origins=["https://localhost:3000", f"https://{hostname}:3000"]
+        allow_origins=["https://localhost:8000", "https://localhost:3000", f"https://{hostname}:8000", f"https://{hostname}:3000"]
     )
     socket_server = SocketServer(
-        allow_origins=["https://localhost:3000", f"https://{hostname}:3000"]
+        allow_origins=["https://localhost:8000", "https://localhost:3000", f"https://{hostname}:8000", f"https://{hostname}:3000"]
     )
     socket_server.set_handlers(server.app)
 
