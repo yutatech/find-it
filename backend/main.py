@@ -4,15 +4,10 @@ from modules.web_rtc_server import WebRtcServer
 from modules.vision_processor import VisionProcessor
 from modules.frontend_server import FrontendServer
 from modules.database import DataBase
-import socket
-
 
 if __name__ == "__main__":
-    hostname = socket.gethostname()
-    print(f"https://{hostname}:3000")
-    
-    server = FastApiServer(allow_origins=["https://localhost:3000", f"https://{hostname}:3000"])
-    socket_server = SocketServer(allow_origins=["https://localhost:3000", f"https://{hostname}:3000"])
+    server = FastApiServer()
+    socket_server = SocketServer()
     socket_server.set_handlers(server.app)
 
     web_rtc_server = WebRtcServer()
@@ -26,14 +21,12 @@ if __name__ == "__main__":
 
     database = DataBase()
     database.set_handlers(server.app)
+    
+    server_url = "find-it.yutatech.jp"
 
     import uvicorn
-
     uvicorn.run(
         server.app,
         host="0.0.0.0",
-        port=8000,
-        ssl_certfile="./webrtc-test.pem",
-        ssl_keyfile="./webrtc-test-key.pem",
         log_level="debug",
     )
