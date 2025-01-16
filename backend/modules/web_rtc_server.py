@@ -107,35 +107,43 @@ class WebRtcServer:
     async def pc_handle_track(self, sid, pc: RTCPeerConnection,
                               track: RemoteStreamTrack):
         if track.kind == "video":
-            frame_processing_lock = asyncio.Lock()  # 排他制御用のロックを作成
-            async def handle_frame_in_background(sid, frame):
-                """
-                フレームの処理をバックグラウンドで行い、結果をクライアントに送信します。
-                """
-                try:
-                    # `on_frame_received` を実行
-                    result = self.on_frame_received(sid, frame)
-                    
-                    # 結果をクライアントに送信
-                    await self.sio.emit("result", result, to=sid)
-                except Exception as e:
-                    print("Error WebRtcServer.handle_frame_in_background():", e)
+            frame_queue = asyncio.Queue(maxsize=2)
+            background_task = None
+            async def process_frames_in_background():
+                while True:
+                    try:
+                        # キューからフレームを取得（キューが空の場合は待機）
+                        sid, frame = await frame_queue.get()
+
+                        # 重い処理を実行（YOLO推論）
+                        result = self.on_frame_received(sid, frame)
+
+                        # 推論結果をクライアントに送信
+                        await self.sio.emit("result", result, to=sid)
+
+                        # フレーム処理を完了
+                        frame_queue.task_done()
+                    except Exception as e:
+                        print("Error WebRtcServer.process_frames_in_background():", e)
                     
                 
+            # バックグラウンドタスクを開始
+            if background_task is None:
+                background_task = asyncio.create_task(process_frames_in_background())
             while True:
                 try:
                     # 1. フレームを受信
                     frame = await track.recv()
                     print(frame.dts, frame.pts, frame.time, frame.time_base)
-                    
-                    # 2. タスクを処理済みにする
-                    track._queue.task_done()
-                    
-                    # 3. キューが空の場合に `on_frame_received` を別スレッドで実行
-                    if track._queue.empty():
-                        if self.on_frame_received is not None:
-                            async with frame_processing_lock:
-                                await handle_frame_in_background(sid, frame)
+
+                    # フレームをキューに追加（キューが満杯なら古いフレームを削除）
+                    if frame_queue.full():
+                        try:
+                            frame_queue.get_nowait()  # 古いフレームを削除
+                        except asyncio.QueueEmpty:
+                            pass
+                    await frame_queue.put((sid, frame))  # フレームをキューに追加
+
                 except Exception as e:
                     print("Error WebRtcServer.pc_handle_track():", e)
                     break
