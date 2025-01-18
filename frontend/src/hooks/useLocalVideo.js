@@ -4,21 +4,35 @@ const useLocalVideo = () => {
   const localStreamRef = useRef(null);
   const [isLocalStreamReady, setIsLocalStreamReady] = useState(false);
 
-  const getLocalStream = async () => {
+  const controllerRef = useRef(new AbortController());
+  const signalRef = useRef(controllerRef.current.signal);
+
+  useEffect(() => {
+    let mounted = true;
+
     // カメラの取得
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false, signal: signalRef.current })
       .then((stream) => {
-        console.log('success to get media');
-        localStreamRef.current = stream;
-        setIsLocalStreamReady(true);
+        console.log('success to get media:', isLocalStreamReady, mounted);
+        if (mounted) {
+          localStreamRef.current = stream;
+          setIsLocalStreamReady(true);
+        }
       })
       .catch((error) => {
         console.error('メディアデバイスの取得エラー:', error);
       });
-  };
 
-  useEffect(() => {
-    getLocalStream();
+    return () => {
+      console.log("umount");
+      mounted = false;
+      controllerRef.current.abort();
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+    };
   }, []);
 
   return { localStreamRef, isLocalStreamReady };

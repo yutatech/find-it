@@ -1,14 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import useResultReceiver from "../../hooks/useResultReceiver";
 import ResultView from "./ResultView";
+import useOpticalFlow from "../../hooks/useOpticalFlow";
 
-function Camera({ streamRef, isStreamReady }) {
+function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
   const navigate = useNavigate();
   const location = useLocation();
   const label = location.state?.label;
 
+  const { calcDisplacementFromTime } = useOpticalFlow(streamRef, isStreamReady);
   const { setupResultReceiver, deleteResultReceiver, setOnGetResult } = useResultReceiver();
 
   useEffect(() => {
@@ -22,9 +24,9 @@ function Camera({ streamRef, isStreamReady }) {
 
   return (
     <div style={{ padding: "20px" }}>
-      <button onClick={() => navigate('/page2')}>ラベル選択に戻る</button>
+      <button onClick={() => navigate('/labelselect')}>ラベル選択に戻る</button>
       <h2>選択されたラベル: {label}</h2>
-      <ResultView isVideoStreamReady={isStreamReady} videoStreamRef={streamRef} setOnGetResult={setOnGetResult} />
+      <ResultView isVideoStreamReady={isStreamReady} videoStreamRef={streamRef} setOnGetResult={setOnGetResult} calcDisplacementFromTime={calcDisplacementFromTime} streamStartTimeRef={streamStartTimeRef} />
     </div>
   );
 }
