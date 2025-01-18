@@ -9,33 +9,53 @@ import Camera from './component/InferencePhase/Camera';
 import Logo from "./component/SharedComponents/Logo";
 import Header from './component/SharedComponents/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container } from "react-bootstrap";
 
 import { SocketRefProvider } from './modules/SocketRefContext';
 import useLocalVideo from './hooks/useLocalVideo';
 import useWebRtc from './hooks/useWebRtc';
+import { useState, useEffect } from 'react';
 
 
 function Component() {
   const { localStreamRef, isLocalStreamReady } = useLocalVideo();
   const { startTimeRef } = useWebRtc(localStreamRef, isLocalStreamReady);
+  const [windowHeight, setWindowHeight] = useState(0);
+
+  useEffect(() => {
+    const updateWindowHeight = () => {
+      setWindowHeight(window.innerHeight);  // 現在のウィンドウ高さを設定
+    };
+
+    // 初回実行
+    updateWindowHeight();
+
+    // ウィンドウのリサイズ時にも高さを更新
+    window.addEventListener('resize', updateWindowHeight);
+
+    // クリーンアップ
+    return () => {
+      window.removeEventListener('resize', updateWindowHeight);
+    };
+  }, []);
 
   return (
     <Router>
-      <div style={{ position: "relative", minHeight: "100vh" }}>
+      <Container className="d-flex" style={{ position: "relative", height: `${windowHeight}px`, padding: '0px', paddingTop: '2vh' }}>
         {/* 常に右上に表示されるロゴ */}
-        <Header /> 
         <Logo />
-          {/* ルーティング設定 */}
-          <Routes>
-            <Route path="/" element={<LearningPhasePage />} />
-            <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
-            <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
-            <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef}/>} />
-            <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
-            <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
-            <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />
-          </Routes>
-      </div>
+        {/* ルーティング設定 */}
+        <Routes>
+          <Route path="/" element={<LearningPhasePage />} />
+          <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
+          <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
+          <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
+          <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
+          <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
+          <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />
+        </Routes>
+        <Header />
+      </Container>
     </Router>
   );
 }
