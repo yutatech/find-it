@@ -17,7 +17,7 @@ import useWebRtc from './hooks/useWebRtc';
 
 function Component() {
   const { localStreamRef, isLocalStreamReady } = useLocalVideo();
-  const { isConnected, setupWebRtc, startTimeRef } = useWebRtc(localStreamRef, isLocalStreamReady);
+  const { startTimeRef } = useWebRtc(localStreamRef, isLocalStreamReady);
 
   return (
     <Router>

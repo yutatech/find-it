@@ -1,11 +1,10 @@
-import { useRef, useEffect, use } from "react";
+import { useRef, useEffect } from "react";
 
 const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
   const cvRef = useRef(window.cv);
   const playingRef = useRef(false);
   const cvReadyRef = useRef(false);
   const videoRef = useRef(null);
-  const flowArrowRef = useRef(null);
   const flowHistoryRef = useRef([]);
 
   const downScale = 3;
@@ -117,6 +116,14 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
     // 2. 配列をソート
     let sortedData = Array.from(data).sort((a, b) => a - b);
 
+    const threshold = 0.1; // 絶対値の閾値
+    // 負の側の要素を処理
+    const firstPositiveIndex = sortedData.findIndex(value => value >= -threshold);
+    // 正の側の要素を処理
+    const lastValidIndex = sortedData.findIndex(value => value > threshold);
+    // 残したい要素だけを抽出
+    sortedData = sortedData.slice(0, firstPositiveIndex).concat(sortedData.slice(lastValidIndex));
+
     // 3. 中央値を計算
     let middle = Math.floor(sortedData.length / 2);
     let median;
@@ -138,27 +145,20 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
       const cap = new cvRef.current.VideoCapture(video);
       const cv = cvRef.current;
 
-      // start processing.
       cap.read(frame2Ref.current);
       cv.cvtColor(frame2Ref.current, nextRef.current, cv.COLOR_RGBA2GRAY);
       cv.calcOpticalFlowFarneback(prvImgRef.current, nextRef.current, flowRef.current, 0.5, 3, 15, 3, 5, 1.2, 0);
       cv.split(flowRef.current, flowVecRef.current);
-      let u = flowVecRef.current.get(0);
-      let v = flowVecRef.current.get(1);
-      // console.log(calculateMedian(u), calculateMedian(v))
-      flowArrowRef.current = { x: calculateMedian(u) * downScale, y: calculateMedian(v) * downScale, timestamp: new Date() };
+      nextRef.current.copyTo(prvImgRef.current);
 
-      flowHistoryRef.current.push(flowArrowRef.current);
+      const u = flowVecRef.current.get(0);
+      const v = flowVecRef.current.get(1);
+      const flowArrow = { x: calculateMedian(u) * downScale, y: calculateMedian(v) * downScale, timestamp: new Date() };
+      flowHistoryRef.current.push(flowArrow);
 
-      const canvas = document.getElementById("canvasDraw");
-      const ctx = canvas.getContext("2d");
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "red";
-      ctx.beginPath();
-      // console.log(flowArrowRef.current.x)
-      ctx.moveTo(canvas.width / 2, canvas.height / 2);
-      ctx.lineTo(canvas.width / 2 + flowArrowRef.current.x * 10, canvas.height / 2 + flowArrowRef.current.y * 10);
-      ctx.stroke();
+      // Debug
+      /*
+      const canvas = document.getElementById("canvasDebugOut");
 
       cv.cartToPolar(u, v, magRef.current, angRef.current);
       u.delete(); v.delete();
@@ -166,8 +166,16 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
       cv.normalize(magRef.current, hsv2Ref.current, 0, 255, cv.NORM_MINMAX, cv.CV_8UC1);
       cv.merge(hsvVecRef.current, hsvRef.current);
       cv.cvtColor(hsvRef.current, rgbRef.current, cv.COLOR_HSV2RGB);
-      cv.imshow('canvasOutput', rgbRef.current);
-      nextRef.current.copyTo(prvImgRef.current);
+      cv.imshow('canvasDebugOut', rgbRef.current);
+
+      const ctx = canvas.getContext("2d");
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "red";
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, canvas.height / 2);
+      ctx.lineTo(canvas.width / 2 + flowArrow.x * 10, canvas.height / 2 + flowArrow.y * 10);
+      ctx.stroke();
+      */
     }
   };
 
@@ -182,6 +190,7 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
       y: flowHistoryRef.current.reduce((sum, item) => sum + item.y, 0)
     };
     return displacement
+    // return {x: 0, y: 0};
   }
   return { calcDisplacementFromTime };
 };

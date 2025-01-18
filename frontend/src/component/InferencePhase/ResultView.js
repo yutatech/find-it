@@ -56,6 +56,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
         DrawResult(ctx, result_copy);
       });
+      ctx.strokeStyle = "gray";
       ctx.strokeRect(10, 10, canvasSizeRef.current.width - 20, canvasSizeRef.current.height - 20);
     }
     window.requestAnimationFrame(drawResult);
@@ -133,7 +134,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
         style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
       />
       <canvas
-        id="canvasOutput"
+        id="canvasDebugOut"
         width={canvasSize.width}
         height={canvasSize.height}
         style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
