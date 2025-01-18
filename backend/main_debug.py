@@ -46,11 +46,11 @@ if __name__ == "__main__":
     vision_processor = VisionProcessor()
     web_rtc_server.set_on_frame_received(vision_processor.on_frame_received)
 
-    frontend_server = FrontendServer()
-    frontend_server.set_handlers(server.app)
-
     database = DataBase()
     database.set_handlers(server.app)
+    
+    frontend_server = FrontendServer()
+    frontend_server.set_handlers(server.app)
 
     import uvicorn
 
