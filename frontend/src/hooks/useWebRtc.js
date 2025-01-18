@@ -7,6 +7,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
   const [isConnected, setIsConnected] = useState(false);
   const peerConnection = useRef(null);
   const offerRef = useRef(null);
+  const startTimeRef = useRef(new Date());
 
   const handleAnswer = async (answer) => {
     await peerConnection.current.setLocalDescription(offerRef.current);
@@ -70,6 +71,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
     // LocalのTrackをWebRTC接続に追加
     await localStreamRef.current.getTracks().forEach((track) => {
       peerConnection.current.addTrack(track, localStreamRef.current);
+      startTimeRef.current = new Date();
     });
 
     // Offerを作成
@@ -95,7 +97,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
     }
   }, [isLocalStreamReady]);
 
-  return { isConnected, setupWebRtc };
+  return { isConnected, setupWebRtc, startTimeRef };
 };
 
 export default useWebRtc;

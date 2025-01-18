@@ -41,6 +41,7 @@ class VisionProcessor:
                 "box": [x1, y1, x2 - x1, y2 - y1]
             })
         return {
+            "timestamp": frame.time,
             "image_size": {'width': img.shape[1], 'height': img.shape[0]},
             "results": result_dict
         }

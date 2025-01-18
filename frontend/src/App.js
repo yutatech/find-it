@@ -17,7 +17,7 @@ import useWebRtc from './hooks/useWebRtc';
 
 function Component() {
   const { localStreamRef, isLocalStreamReady } = useLocalVideo();
-  const { isConnected, setupWebRtc } = useWebRtc(localStreamRef, isLocalStreamReady);
+  const { isConnected, setupWebRtc, startTimeRef } = useWebRtc(localStreamRef, isLocalStreamReady);
 
   return (
     <Router>
@@ -30,7 +30,7 @@ function Component() {
             <Route path="/" element={<LearningPhasePage />} />
             <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
             <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
-            <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady}/>} />
+            <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef}/>} />
             <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
             <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
             <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />

@@ -6,6 +6,9 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
   const cvReadyRef = useRef(false);
   const videoRef = useRef(null);
   const flowArrowRef = useRef(null);
+  const flowHistoryRef = useRef([]);
+
+  const downScale = 3;
 
   // OpenCV の初期化完了を待つ
   cvRef.current.onRuntimeInitialized = () => {
@@ -81,14 +84,14 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
     const settings = videoTrack.getSettings();
     console.log(settings.width, settings.height);
 
-    video.height = settings.height / 3;
-    video.width = settings.width / 3;
+    video.height = settings.height / downScale;
+    video.width = settings.width / downScale;
 
     let frame1 = new cv.Mat(video.height, video.width, cv.CV_8UC4);
     cap.read(frame1);
     cv.cvtColor(frame1, prvImgRef.current, cv.COLOR_RGBA2GRAY);
     frame1.delete();
-  
+
     hsvRef.current = new cv.Mat();
     hsv0Ref.current = new cv.Mat(video.height, video.width, cv.CV_8UC1);
     hsv1Ref.current = new cv.Mat(video.height, video.width, cv.CV_8UC1, new cv.Scalar(255));
@@ -113,17 +116,17 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
 
     // 2. 配列をソート
     let sortedData = Array.from(data).sort((a, b) => a - b);
-    
+
     // 3. 中央値を計算
     let middle = Math.floor(sortedData.length / 2);
     let median;
 
     if (sortedData.length % 2 === 0) {
-        // 偶数個の要素の場合、中央の2つの要素の平均
-        median = (sortedData[middle - 1] + sortedData[middle]) / 2;
+      // 偶数個の要素の場合、中央の2つの要素の平均
+      median = (sortedData[middle - 1] + sortedData[middle]) / 2;
     } else {
-        // 奇数個の要素の場合、中央の要素
-        median = sortedData[middle];
+      // 奇数個の要素の場合、中央の要素
+      median = sortedData[middle];
     }
 
     return median;
@@ -131,47 +134,56 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
 
   const calcOpticalFlow = () => {
     if (cvReadyRef.current) {
-      // try {
-          const video = videoRef.current;
-          const cap = new cvRef.current.VideoCapture(video);
-          const cv = cvRef.current;
+      const video = videoRef.current;
+      const cap = new cvRef.current.VideoCapture(video);
+      const cv = cvRef.current;
 
-          // start processing.
-          cap.read(frame2Ref.current);
-          cv.cvtColor(frame2Ref.current, nextRef.current, cv.COLOR_RGBA2GRAY);
-          cv.calcOpticalFlowFarneback(prvImgRef.current, nextRef.current, flowRef.current, 0.5, 3, 15, 3, 5, 1.2, 0);
-          cv.split(flowRef.current, flowVecRef.current);
-          let u = flowVecRef.current.get(0);
-          let v = flowVecRef.current.get(1);
-          // console.log(calculateMedian(u), calculateMedian(v))
-          flowArrowRef.current = {x: calculateMedian(u), y: calculateMedian(v)};
+      // start processing.
+      cap.read(frame2Ref.current);
+      cv.cvtColor(frame2Ref.current, nextRef.current, cv.COLOR_RGBA2GRAY);
+      cv.calcOpticalFlowFarneback(prvImgRef.current, nextRef.current, flowRef.current, 0.5, 3, 15, 3, 5, 1.2, 0);
+      cv.split(flowRef.current, flowVecRef.current);
+      let u = flowVecRef.current.get(0);
+      let v = flowVecRef.current.get(1);
+      // console.log(calculateMedian(u), calculateMedian(v))
+      flowArrowRef.current = { x: calculateMedian(u) * downScale, y: calculateMedian(v) * downScale, timestamp: new Date() };
 
-          const canvas = document.getElementById("canvasDraw");
-          const ctx = canvas.getContext("2d");
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = "red";
-          ctx.beginPath();
-          console.log(flowArrowRef.current.x)
-          ctx.moveTo(canvas.width/2, canvas.height/2);
-          ctx.lineTo(canvas.width/2 + flowArrowRef.current.x * 10, canvas.height/2 + flowArrowRef.current.y * 10);
-          ctx.stroke();
+      flowHistoryRef.current.push(flowArrowRef.current);
 
-          cv.cartToPolar(u, v, magRef.current, angRef.current);
-          u.delete(); v.delete();
-          angRef.current.convertTo(hsv0Ref.current, cv.CV_8UC1, 180/Math.PI/2);
-          cv.normalize(magRef.current, hsv2Ref.current, 0, 255, cv.NORM_MINMAX, cv.CV_8UC1);
-          cv.merge(hsvVecRef.current, hsvRef.current);
-          cv.cvtColor(hsvRef.current, rgbRef.current, cv.COLOR_HSV2RGB);
-          cv.imshow('canvasOutput', rgbRef.current);
-          nextRef.current.copyTo(prvImgRef.current);
-  
-      // } catch (err) {
-      //     console.log(err);
-      // }
+      const canvas = document.getElementById("canvasDraw");
+      const ctx = canvas.getContext("2d");
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "red";
+      ctx.beginPath();
+      // console.log(flowArrowRef.current.x)
+      ctx.moveTo(canvas.width / 2, canvas.height / 2);
+      ctx.lineTo(canvas.width / 2 + flowArrowRef.current.x * 10, canvas.height / 2 + flowArrowRef.current.y * 10);
+      ctx.stroke();
+
+      cv.cartToPolar(u, v, magRef.current, angRef.current);
+      u.delete(); v.delete();
+      angRef.current.convertTo(hsv0Ref.current, cv.CV_8UC1, 180 / Math.PI / 2);
+      cv.normalize(magRef.current, hsv2Ref.current, 0, 255, cv.NORM_MINMAX, cv.CV_8UC1);
+      cv.merge(hsvVecRef.current, hsvRef.current);
+      cv.cvtColor(hsvRef.current, rgbRef.current, cv.COLOR_HSV2RGB);
+      cv.imshow('canvasOutput', rgbRef.current);
+      nextRef.current.copyTo(prvImgRef.current);
     }
   };
 
-  return { onUpdate, flowArrowRef };
+  const calcDisplacementFromTime = (time) => {
+    while (flowHistoryRef.current.length > 0 &&
+      flowHistoryRef.current[0].timestamp < time) { // 条件: timestamp が現在時刻以下
+      flowHistoryRef.current.shift(); // 先頭の要素を削除
+    }
+
+    const displacement = {
+      x: flowHistoryRef.current.reduce((sum, item) => sum + item.x, 0),
+      y: flowHistoryRef.current.reduce((sum, item) => sum + item.y, 0)
+    };
+    return displacement
+  }
+  return { calcDisplacementFromTime };
 };
 
 export default useOpticalFlow;
