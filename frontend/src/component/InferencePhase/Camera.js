@@ -23,7 +23,7 @@ function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
   }, [isStreamReady]);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
       <button onClick={() => navigate('/labelselect')}>ラベル選択に戻る</button>
       <h2>選択されたラベル: {label}</h2>
       <ResultView isVideoStreamReady={isStreamReady} videoStreamRef={streamRef} setOnGetResult={setOnGetResult} calcDisplacementFromTime={calcDisplacementFromTime} streamStartTimeRef={streamStartTimeRef} />
