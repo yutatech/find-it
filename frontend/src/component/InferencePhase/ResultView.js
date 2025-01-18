@@ -41,7 +41,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       // 映像を転送するときにリサイズしている場合があるので、その分を補正
       const imgToCanvasScale = canvasSizeRef.current.width / imageSize.width;
 
-      const frameTime = new Date(streamStartTimeRef.current.getTime() + result.timestamp * 1000); // 30秒前
+      const frameTime = new Date(streamStartTimeRef.current.getTime() + result.timestamp * 1000);
       const displacecmet = calcDisplacementFromTime(frameTime);
 
       result.results.forEach((result) => {

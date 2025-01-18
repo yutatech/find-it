@@ -7,7 +7,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
   const [isConnected, setIsConnected] = useState(false);
   const peerConnection = useRef(null);
   const offerRef = useRef(null);
-  const startTimeRef = useRef(new Date());
+  const startTimeRef = useRef(null);
 
   const handleAnswer = async (answer) => {
     await peerConnection.current.setLocalDescription(offerRef.current);
@@ -71,7 +71,21 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
     // LocalのTrackをWebRTC接続に追加
     await localStreamRef.current.getTracks().forEach((track) => {
       peerConnection.current.addTrack(track, localStreamRef.current);
-      startTimeRef.current = new Date();
+
+      // 定期的に getStats() を呼び出して監視
+      const interval = setInterval(async () => {
+        const stats = await peerConnection.current.getStats(null);
+        stats.forEach(report => {
+          if (report.type === 'outbound-rtp' && report.kind === 'video') {
+            if (report.framesEncoded > 0 && !startTimeRef.current) {
+              // 最初のフレームが送信された時のシステム時刻を取得
+              startTimeRef.current = new Date();
+              // 監視を終了
+              clearInterval(interval);
+            }
+          }
+        });
+      }, 10); // 10msごとに監視
     });
 
     // Offerを作成
