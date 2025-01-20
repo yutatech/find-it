@@ -9,7 +9,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     HOSTNAME=$(scutil --get LocalHostName).local
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linuxの場合
-    HOSTNAME=$(hostname)
+    HOSTNAME=$(hostname).local
 else
     echo "Unsupported OS: $OSTYPE"
     exit 1
@@ -17,7 +17,7 @@ fi
 
 echo "Building frontend..."
 
-REACT_APP_API_URL=https://$HOSTNAME:8000
+export REACT_APP_API_URL=https://$HOSTNAME:8000
 echo "REACT_APP_API_URL=$REACT_APP_API_URL"
 
 npm --prefix $SCRIPT_DIR/frontend install

@@ -45,19 +45,19 @@ function Component() {
   return (
     <Router>
       <div className="d-flex justify-content-center">
-        <Container fluid="xl" className="d-flex flex-column" style={{height: `${windowHeight}`, padding: '0px', position: 'relative'}}>
+        <Container fluid="xl" className="d-flex flex-column" style={{ height: `${windowHeight}`, padding: '0px', position: 'relative' }}>
           {/* 常に右上に表示されるロゴ */}
           <Logo />
-          <Row className="d-flex w-100 flex-column" style={{ padding: 0, margin: 0, height: `${viewHight}px` }}>
+          <Row className="d-flex w-100 flex-column flex-grow-1 " style={{ padding: 0, margin: 0, height: `${viewHight}px` }}>
             {/* ルーティング設定 */}
             <Routes>
               <Route path="/" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
               <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
               {/* <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
               <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} /> */}
-              <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
+              {/* <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
               <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
-              <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />
+              <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} /> */}
             </Routes>
           </Row>
           <Header />

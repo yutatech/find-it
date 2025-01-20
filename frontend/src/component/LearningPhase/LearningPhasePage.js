@@ -1,18 +1,29 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import './ButtonStyle.css';  // カスタムCSSをインポート
-import { Row } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
+
+
+import AddPhoto from './TeacherData/AddPhoto';
+import LabelManagement from './TeacherData/LabelManagement';
+import EditPhoto from './TeacherData/EditPhoto';
 
 function LearningPhasePage() {
-  const navigate = useNavigate()
-
   return (
-    <Row className="d-flex w-100 flex-grow-1 justify-content-center">
-      <h1>学習</h1>
-      <button className="add-photo-button" onClick={() => navigate('/learningphasepage/addphoto')}>写真を追加</button>
-      <button className="add-photo-button" onClick={() => navigate('/learningphasepage/editphoto')}>写真を編集</button>
-      <button className="add-photo-button" onClick={() => navigate('/learningphasepage/labelmanagement')}>ラベルを編集</button>
-    </Row>
+    <Container fluid="md" className='d-flex h-100 flex-column' style={{ padding: 0, margin: 0 }}>
+      <Row className='d-flex w-100' style={{ margin: 0, paddingTop: '1rem', backgroundColor: 'lightgray' }}>
+        <h1>設定</h1>
+      </Row>
+      <Row className='d-flex w-100' style={{ margin: 0, overflow: 'hidden'}}>
+        <Container fluid="md" className="justify-content-center flex-column"
+          style={{ margin: 0, maxHeight: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
+          <Row className="align-items-start">
+            <AddPhoto />
+            <LabelManagement />
+            <EditPhoto />
+          </Row>
+        </Container>
+      </Row>
+    </Container>
   );
 }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, TextField, Select, MenuItem } from '@mui/material';
-import { Row, Container } from 'react-bootstrap';
+import { Row, Container, Col } from 'react-bootstrap';
+import './SettingsStyle.css';
 
 const AddPhoto = () => {
     const [image, setImage] = useState(null);
@@ -55,11 +56,9 @@ const AddPhoto = () => {
     };
 
     return (
-        <Row className="d-flex w-100 flex-grow-1 justify-content-center"
-            style={{ margin: 0, height: '100vh - 4rem' }}>
-            <Container style={{overflowY: 'auto'}}>
-
-                <h2>ラベルを選択または入力</h2>
+        <Col className="justify-content-center col-12 col-xl-4 h-auto" style={{padding: 0}} >
+            <div className="frame-style">
+                <h2>教師データを追加</h2>
                 <Select
                     value={useNewLabel ? '' : label}
                     onChange={(e) => {
@@ -98,8 +97,9 @@ const AddPhoto = () => {
                         写真を選択
                     </Button>
                 </label>
-            </Container>
-        </Row>
+            {/* </Container> */}
+            </div>
+        </Col>
     );
 };
 

@@ -13,11 +13,11 @@ if __name__ == "__main__":
     web_rtc_server = WebRtcServer()
     web_rtc_server.set_handlers(socket_server.sio)
 
-    vision_processor = VisionProcessor()
-    web_rtc_server.set_on_frame_received(vision_processor.on_frame_received)
-
     database = DataBase()
     database.set_handlers(server.app)
+
+    vision_processor = VisionProcessor(database)
+    web_rtc_server.set_on_frame_received(vision_processor.on_frame_received)
     
     frontend_server = FrontendServer()
     frontend_server.set_handlers(server.app)

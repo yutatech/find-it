@@ -26,7 +26,7 @@ function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
   }, [isStreamReady]);
 
   return (
-    <>
+    <Container className="h-100" style={{ padding: 0, margin: 0 }}>
       <Row className="d-flex w-100 justify-content-start" style={{ zIndex: 2, position: 'absolute', margin: '0' }}>
         <LabelSelect />
       </Row>
@@ -38,7 +38,7 @@ function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
           calcDisplacementFromTime={calcDisplacementFromTime}
           streamStartTimeRef={streamStartTimeRef} />
       </Row>
-    </>
+    </Container>
   );
 }
 

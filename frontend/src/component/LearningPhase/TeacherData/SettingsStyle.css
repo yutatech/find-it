@@ -1,0 +1,8 @@
+.frame-style {
+  --padding: 1rem;
+  background-color: lightgray;
+  border-radius: 2rem;
+  padding: var(--padding);
+  margin: 0.5rem;
+  height: calc(100% - var(--padding));
+}
