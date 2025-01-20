@@ -147,8 +147,8 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       />
       <canvas
         id="canvasDebugOut"
-        width='100%'
-        height='100%'
+        width={canvasSize.width}
+        height={canvasSize.height}
         style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
       />
     </div>

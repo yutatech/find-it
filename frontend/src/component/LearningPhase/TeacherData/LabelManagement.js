@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem } from '@mui/material';
-import { Row } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
+import './SettingsStyle.css';
 
 
 const LabelManagement = () => {
@@ -67,9 +68,9 @@ const LabelManagement = () => {
     };
 
     return (
-        <Row className="d-flex w-100 flex-grow-1 justify-content-center"
-             style={{margin: 0}}>
-            
+        <Col className="justify-content-center col-12 col-xl-4 h-auto"
+             style={{padding: 0}}>
+            <div className='frame-style'>
             <h1>ラベル管理</h1>
 
             <TextField
@@ -126,7 +127,8 @@ const LabelManagement = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Row>
+            </div>
+        </Col>
     );
 };
 

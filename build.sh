@@ -9,7 +9,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     HOSTNAME=$(scutil --get LocalHostName).local
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linuxの場合
-    HOSTNAME=$(hostname)
+    HOSTNAME=$(hostname).local
 else
     echo "Unsupported OS: $OSTYPE"
     exit 1
