@@ -24,7 +24,7 @@ function Component() {
       <div style={{ position: "relative", minHeight: "100vh" }}>
         {/* 常に右上に表示されるロゴ */}
         <Header /> 
-        <Logo />
+       <Logo /> 
           {/* ルーティング設定 */}
           <Routes>
             <Route path="/" element={<LearningPhasePage />} />
