@@ -1,6 +1,6 @@
-// Logo.js
-import React from "react";
-import logo from "./logo.png"; // ロゴ画像へのパス
+import React from 'react';
+import logo from './logo.png'; // logo.pngのパスに合わせて調整
+import './../../App.css'; // CSSファイルをインポート
 
 const Logo = () => {
   const logoStyle = {
@@ -15,3 +15,4 @@ const Logo = () => {
 };
 
 export default Logo;
+
