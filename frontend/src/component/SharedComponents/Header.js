@@ -20,8 +20,7 @@ const Header = () => {
   };
 
   return (
-    <Row style={{ height: '4rem', width:'100%', padding: '0', margin: '0', position: 'absolute',
-      left: 0, bottom: 0}}>
+    <Row style={{ height: '4rem', width:'100%', padding: '0', margin: '0'}}>
       <Button onClick={onFindButton}
         variant='primary'
         className='d-flex justify-content-center align-items-center'

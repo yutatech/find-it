@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, TextField, Select, MenuItem } from '@mui/material';
+import { Row } from 'react-bootstrap';
 
 const AddPhoto = () => {
     const [image, setImage] = useState(null);
@@ -59,8 +60,7 @@ const AddPhoto = () => {
     };
 
     return (
-        <div>
-            
+        <Row className="d-flex w-100 flex-grow-1 justify-content-center">
 
             <h2>ラベルを選択または入力</h2>
             <Select
@@ -98,19 +98,10 @@ const AddPhoto = () => {
             />
             <label htmlFor="fileInput">
                 <Button component="span" variant="contained">
-                    ライブラリから画像を選択
+                    写真を選択
                 </Button>
             </label>
-
-            <Button onClick={startCamera} variant="contained" color="primary">
-                カメラを起動
-            </Button>
-
-            <video ref={videoRef} autoPlay style={{ width: '100%', marginTop: 20 }}></video>
-            <Button onClick={takePhoto} variant="contained" color="secondary">
-                写真を撮って追加
-            </Button>
-        </div>
+        </Row>
     );
 };
 
