@@ -1,13 +1,17 @@
 import math
 from ultralytics import YOLO
 import cv2
+from modules.database import DataBase
 
 class VisionProcessor:
-    def __init__(self):
+    def __init__(self, data_base:DataBase):
         self.counter = 0
         # self.model = torch.hub.load("ultralytics/yolov8", "yolov8")
         self.model = YOLO("find_it_model.pt")
         print('load model complete')
+        data_base.labels = [i for i in self.model.names.values()]
+        print(data_base.labels)
+        
     
     def on_frame_received(self, sid, frame):
         self.counter += 1
