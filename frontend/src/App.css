@@ -36,13 +36,3 @@
     transform: rotate(360deg);
   }
 }
-
-/* ロゴを右上に固定表示するためのスタイル */
-.logo {
-  position: fixed;
-  top: 5px;
-  right: 10px;
-  z-index: 1000; /* 他の要素よりも上に表示するための値 */
-  width: auto; /* ロゴの幅 */
-  height: 50px; /* アスペクト比を保つため自動調整 */
-}

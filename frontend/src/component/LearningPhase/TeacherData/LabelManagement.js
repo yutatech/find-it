@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem } from '@mui/material';
+import { Row } from 'react-bootstrap';
 
 
 const LabelManagement = () => {
@@ -66,7 +67,8 @@ const LabelManagement = () => {
     };
 
     return (
-        <div>
+        <Row className="d-flex w-100 flex-grow-1 justify-content-center"
+             style={{margin: 0}}>
             
             <h1>ラベル管理</h1>
 
@@ -124,7 +126,7 @@ const LabelManagement = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </Row>
     );
 };
 

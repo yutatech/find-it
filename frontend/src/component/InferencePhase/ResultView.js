@@ -4,6 +4,7 @@ import DrawResult from "../../modules/DrawResult";
 const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDisplacementFromTime, streamStartTimeRef }) => {
   const videoRef = useRef(null); // video要素への参照
   const canvasRef = useRef(null); // canvas要素への参照
+  const frameRef = useRef(null); // フレーム要素への参照
 
   const canvasSizeRef = useRef({ width: 640, height: 480 });
   const videoSizeRef = useRef({ width: 640, height: 480 });
@@ -71,22 +72,33 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     let width = videoSizeRef.current.width;
     let height = videoSizeRef.current.height;
 
-    if (width > window.innerWidth) {
-      height = window.innerWidth * height / width;
-      width = window.innerWidth;
+    const videoParentRect = frameRef.current.parentElement.getBoundingClientRect();
+
+    console.log('parent', videoParentRect.height);
+    if (height < videoParentRect.height) {
+      width = width * videoParentRect.height / height;
+      height = videoParentRect.height;
     }
-    if (height > window.innerHeight) {
-      width = window.innerHeight * width / height;
-      height = window.innerHeight;
+
+    if (width > videoParentRect.width) {
+      height = videoParentRect.width * height / width;
+      width = videoParentRect.width;
+    }
+
+    if (height > videoParentRect.height) {
+      width = videoParentRect.height * width / height;
+      height = videoParentRect.height;
     }
 
     canvasSizeRef.current = { width: width, height: height };
+    console.log('canvasSize', canvasSizeRef.current);
     setCanvasSize({ width: width, height: height });
   };
 
   useEffect(() => {
     if (isVideoStreamReady) {
       // video要素にストリームを設定
+      console.log('video added');
       videoRef.current.srcObject = videoStreamRef.current;
 
       // videoStreamのピクセルサイズを取得
@@ -114,7 +126,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
   }, []);
 
   return (
-    <div style={{ position: "relative", width: `${canvasSize.width}px`, height: `${canvasSize.height}px` }}>
+    <div ref={frameRef} style={{ position: "relative", width: `${canvasSize.width}px`, height: `${canvasSize.height}px`, padding: 0 }}>
       {/* Video */}
       <video
         ref={videoRef}
@@ -131,12 +143,12 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
         ref={canvasRef}
         width={canvasSize.width}
         height={canvasSize.height}
-        style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
+        style={{ position: "relative", top: 0, left: 0, pointerEvents: "none" }}
       />
       <canvas
         id="canvasDebugOut"
-        width={canvasSize.width}
-        height={canvasSize.height}
+        width='100%'
+        height='100%'
         style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
       />
     </div>

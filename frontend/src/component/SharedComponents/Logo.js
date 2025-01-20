@@ -2,11 +2,17 @@ import React from 'react';
 import logo from './logo.png'; // logo.pngのパスに合わせて調整
 import './../../App.css'; // CSSファイルをインポート
 
-function Logo() {
-  return (
-    <img src={logo} alt="Logo" className="logo" />
-  );
-}
+const Logo = () => {
+  const logoStyle = {
+    zIndex: 100,
+    position: "absolute",
+    top: "2vh",
+    right: "2vw",
+    width: "100px", // サイズを調整
+  };
+
+  return <img src={logo} alt="Find It Logo" style={logoStyle} />;
+};
 
 export default Logo;
 

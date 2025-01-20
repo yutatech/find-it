@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Button, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle
 } from '@mui/material';
+import { Row } from 'react-bootstrap';
 
 const EditPhoto = () => {
     const [images, setImages] = useState([]);
@@ -62,7 +63,8 @@ const EditPhoto = () => {
     }, {});
 
     return (
-        <div>
+        <Row className="d-flex w-100 flex-grow-1 justify-content-center"
+                style={{margin: 0}}>
             
             <h1>画像編集</h1>
 
@@ -140,7 +142,7 @@ const EditPhoto = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </Row>
     );
 };
 

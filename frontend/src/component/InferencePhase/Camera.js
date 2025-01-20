@@ -1,8 +1,11 @@
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Row, Col, Container } from 'react-bootstrap';
 
-import useResultReceiver from "../../hooks/useResultReceiver";
+
 import ResultView from "./ResultView";
+import LabelSelect from "./LabelSelect";
+import useResultReceiver from "../../hooks/useResultReceiver";
 import useOpticalFlow from "../../hooks/useOpticalFlow";
 
 function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
@@ -23,11 +26,19 @@ function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
   }, [isStreamReady]);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <button onClick={() => navigate('/labelselect')}>ラベル選択に戻る</button>
-      <h2>選択されたラベル: {label}</h2>
-      <ResultView isVideoStreamReady={isStreamReady} videoStreamRef={streamRef} setOnGetResult={setOnGetResult} calcDisplacementFromTime={calcDisplacementFromTime} streamStartTimeRef={streamStartTimeRef} />
-    </div>
+    <>
+      <Row className="d-flex w-100 justify-content-start" style={{ zIndex: 2, position: 'absolute', margin: '0' }}>
+        <LabelSelect />
+      </Row>
+      <Row className='d-flex w-100 h-100 justify-content-center align-items-end' style={{ zIndex: 1, padding: 0, margin: '0' }}>
+        <ResultView
+          isVideoStreamReady={isStreamReady}
+          videoStreamRef={streamRef}
+          setOnGetResult={setOnGetResult}
+          calcDisplacementFromTime={calcDisplacementFromTime}
+          streamStartTimeRef={streamStartTimeRef} />
+      </Row>
+    </>
   );
 }
 
