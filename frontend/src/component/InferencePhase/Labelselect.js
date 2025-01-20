@@ -39,7 +39,7 @@ function Labelselect() {
     <div>
       {/* ラベル選択画面 */}
       {!selectedLabel ? (
-        <div style={{ position: "relative", width: "200px" }}>
+        <div style={{ position: "relative", width: "300px" }}>
           <h2>何を探しますか？</h2>
             <Autocomplete
             options={labelList}
