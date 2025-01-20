@@ -27,6 +27,49 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     return copy;
   }
 
+  function lowPassFilter(previous, current, alpha_cord = 0.8, alpha_size = 0.5) {
+    return {
+      label: current.label,
+      box: [
+        previous.box[0] * (1 - alpha_cord) + current.box[0] * alpha_cord,
+        previous.box[1] * (1 - alpha_cord) + current.box[1] * alpha_cord,
+        previous.box[2] * (1 - alpha_size) + current.box[2] * alpha_size,
+        previous.box[3] * (1 - alpha_size) + current.box[3] * alpha_size
+      ]
+    };
+  }
+  
+  const prvTrackedResultsRef = useRef([]);
+  // Process the time series data
+  function processObjectsData(data, threshold = 200) {
+    let trackedResult = [];  // Final output list
+    const prvTrackedResults = prvTrackedResultsRef.current;
+    // Iterate through the data
+    data.forEach((item, index) => {
+      let matched = false;
+      // Try to find a matching label with similar position in the previous data
+      for (let i = 0; i < prvTrackedResults.length; i++) {
+        if (prvTrackedResults[i].label === item.label && 
+            Math.abs(prvTrackedResults[i].box[0] - item.box[0]) < threshold && 
+            Math.abs(prvTrackedResults[i].box[1] - item.box[1]) < threshold) {
+          
+          // Apply low-pass filter to position and size
+          trackedResult.push(lowPassFilter(prvTrackedResults[i], item));
+          matched = true;
+          break;
+        }
+      }
+  
+      if (!matched) {
+        trackedResult.push(item);
+      }
+    });
+    
+    prvTrackedResultsRef.current = trackedResult;
+  
+    return trackedResult;
+  }
+
   const drawResult = () => {
     const result = resultRef.current;
     if (result) {
@@ -45,6 +88,8 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       const frameTime = new Date(streamStartTimeRef.current.getTime() + result.timestamp * 1000);
       const displacecmet = calcDisplacementFromTime(frameTime);
 
+      let scaledResults = []
+
       result.results.forEach((result) => {
         let result_copy = deepCopy(result);
         result_copy.box[0] *= imgToCanvasScale;
@@ -54,8 +99,13 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
         result_copy.box[0] += displacecmet.x;
         result_copy.box[1] += displacecmet.y;
+        scaledResults.push(result_copy);
+      });
 
-        DrawResult(ctx, result_copy);
+      const trackedResult = processObjectsData(scaledResults);
+
+      trackedResult.forEach((result) => {
+        DrawResult(ctx, result);
       });
       ctx.strokeStyle = "gray";
       ctx.strokeRect(10, 10, canvasSizeRef.current.width - 20, canvasSizeRef.current.height - 20);
@@ -74,7 +124,6 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
     const videoParentRect = frameRef.current.parentElement.getBoundingClientRect();
 
-    console.log('parent', videoParentRect.height);
     if (height < videoParentRect.height) {
       width = width * videoParentRect.height / height;
       height = videoParentRect.height;
@@ -91,14 +140,12 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     }
 
     canvasSizeRef.current = { width: width, height: height };
-    console.log('canvasSize', canvasSizeRef.current);
     setCanvasSize({ width: width, height: height });
   };
 
   useEffect(() => {
     if (isVideoStreamReady) {
       // video要素にストリームを設定
-      console.log('video added');
       videoRef.current.srcObject = videoStreamRef.current;
 
       // videoStreamのピクセルサイズを取得
