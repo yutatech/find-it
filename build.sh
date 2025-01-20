@@ -17,7 +17,7 @@ fi
 
 echo "Building frontend..."
 
-REACT_APP_API_URL=https://$HOSTNAME:8000
+export REACT_APP_API_URL=https://$HOSTNAME:8000
 echo "REACT_APP_API_URL=$REACT_APP_API_URL"
 
 npm --prefix $SCRIPT_DIR/frontend install
