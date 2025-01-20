@@ -4,6 +4,7 @@ import DrawResult from "../../modules/DrawResult";
 const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDisplacementFromTime, streamStartTimeRef }) => {
   const videoRef = useRef(null); // video要素への参照
   const canvasRef = useRef(null); // canvas要素への参照
+  const frameRef = useRef(null); // フレーム要素への参照
 
   const canvasSizeRef = useRef({ width: 640, height: 480 });
   const videoSizeRef = useRef({ width: 640, height: 480 });
@@ -71,6 +72,14 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     let width = videoSizeRef.current.width;
     let height = videoSizeRef.current.height;
 
+    const videoParentRect = frameRef.current.parentElement.getBoundingClientRect();
+
+    console.log('parent', videoParentRect.height);
+    if (height < videoParentRect.height) {
+      width = width * videoParentRect.height / height;
+      height = videoParentRect.height;
+    }
+
     if (width > window.innerWidth) {
       height = window.innerWidth * height / width;
       width = window.innerWidth;
@@ -115,29 +124,29 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
   }, []);
 
   return (
-    <div style={{ position: "relative", width: `${canvasSize.width}px`, height: `${canvasSize.height}px` }}>
+    <div ref={frameRef} style={{ position: "relative", width: `${canvasSize.width}px`, height: `${canvasSize.height}px` }}>
       {/* Video */}
       <video
         ref={videoRef}
         autoPlay
         playsInline
         muted
-        width={canvasSize.width}
-        height={canvasSize.height}
+        width='100%'
+        height='100%'
         style={{ position: "absolute", top: 0, left: 0 }}
       />
       {/* Canvas */}
       <canvas
         id="canvasDraw"
         ref={canvasRef}
-        width={canvasSize.width}
-        height={canvasSize.height}
+        width='100%'
+        height='100%'
         style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
       />
       <canvas
         id="canvasDebugOut"
-        width={canvasSize.width}
-        height={canvasSize.height}
+        width='100%'
+        height='100%'
         style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
       />
     </div>
