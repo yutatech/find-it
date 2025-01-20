@@ -4,10 +4,9 @@ import requests
 import json
 
 # YOLOモデルのロード
-model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/watch_glasses_remote.pt')
-
+model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/runs/detect/yolov8n_finetuned8/weights/last.pt')
 # 画像のパスを指定
-image_path = r'/mnt/c/Users/shingo/YOLO/watch/test/images/7OSMJ0668M2Q_jpg.rf.5617e371d01dfa2a57e5b09ec66ceba7.jpg'
+image_path = r'/mnt/c/Users/shingo/YOLO/remote/train/images/0F2Y5GJOUACI_jpg.rf.3e770663c648eb5d3748661599762049.jpg'
 image = cv2.imread(image_path)
 
 # 検出を許可するラベル
