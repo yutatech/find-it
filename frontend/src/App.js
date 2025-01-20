@@ -9,7 +9,7 @@ import Camera from './component/InferencePhase/Camera';
 import Logo from "./component/SharedComponents/Logo";
 import Header from './component/SharedComponents/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 
 import { SocketRefProvider } from './modules/SocketRefContext';
 import useLocalVideo from './hooks/useLocalVideo';
@@ -48,7 +48,7 @@ function Component() {
         <Container fluid="xl" className="d-flex flex-column" style={{height: `${windowHeight}`, padding: '0px', position: 'relative'}}>
           {/* 常に右上に表示されるロゴ */}
           <Logo />
-          <Row className="d-flex justify-content-center w-100" style={{ padding: 0, margin: 0, height: `${viewHight}px` }}>
+          <Row className="d-flex w-100 flex-column" style={{ padding: 0, margin: 0, height: `${viewHight}px` }}>
             {/* ルーティング設定 */}
             <Routes>
               <Route path="/" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />

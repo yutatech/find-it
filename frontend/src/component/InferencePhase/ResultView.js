@@ -84,13 +84,14 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       height = videoParentRect.width * height / width;
       width = videoParentRect.width;
     }
-  
+
     if (height > videoParentRect.height) {
       width = videoParentRect.height * width / height;
       height = videoParentRect.height;
     }
 
     canvasSizeRef.current = { width: width, height: height };
+    console.log('canvasSize', canvasSizeRef.current);
     setCanvasSize({ width: width, height: height });
   };
 
@@ -125,24 +126,24 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
   }, []);
 
   return (
-    <div ref={frameRef} style={{ position: "relative", width: `${canvasSize.width}px`, height: `${canvasSize.height}px` }}>
+    <div ref={frameRef} style={{ position: "relative", width: `${canvasSize.width}px`, height: `${canvasSize.height}px`, padding: 0 }}>
       {/* Video */}
       <video
         ref={videoRef}
         autoPlay
         playsInline
         muted
-        width='100%'
-        height='100%'
+        width={canvasSize.width}
+        height={canvasSize.height}
         style={{ position: "absolute", top: 0, left: 0 }}
       />
       {/* Canvas */}
       <canvas
         id="canvasDraw"
         ref={canvasRef}
-        width='100%'
-        height='100%'
-        style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
+        width={canvasSize.width}
+        height={canvasSize.height}
+        style={{ position: "relative", top: 0, left: 0, pointerEvents: "none" }}
       />
       <canvas
         id="canvasDebugOut"
