@@ -1,15 +1,11 @@
 import React, { useState, useEffect} from "react";
-// import Camera from "./Camera"; // カメラコンポーネントをインポート
-import Camera from "./Camera"; // カメラコンポーネントをインポート
 import { Autocomplete, TextField} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Row } from "react-bootstrap";
 
-function Labelselect() {
+function LabelSelect() {
   const [selectedLabel] = useState(null); 
   const [label, setLabel] = useState('');
   const [labelList, setLabelList] = useState([]);
-  // const [useNewLabel, setUseNewLabel] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // itemsの取得
@@ -31,32 +27,22 @@ function Labelselect() {
   const handleLabelChange = (event, newValue) => {
     if (newValue) {
       setLabel(newValue);
-      navigate("/inferencephasepage/camera",{state:{label: newValue}});
     }
   };
   
   return (
-    <div>
-      {/* ラベル選択画面 */}
-      {!selectedLabel ? (
-        <div style={{ position: "relative", width: "200px" }}>
-          <h2>何を探しますか？</h2>
-            <Autocomplete
-            options={labelList}
-            value={label}
-            onChange={handleLabelChange}
-            open // 常に候補を表示する
-            disableCloseOnSelect // 候補を選択してもリストが閉じないようにする
-            renderInput={(params) => <TextField {...params} label="ラベルを選択" inputProps={{ ...params.inputProps, readOnly: true }}/>}
-            fullWidth
-            />
-        </div>
-      ) : (
-        // カメラコンポーネントを表示
-        <Camera label={selectedLabel} />
-      )}
-    </div>
+    <Row className="col-8 col-sm-8 col-md-6 col-lg-3 col-xl-3" style={{marginTop: '2vh'}}>
+      <Autocomplete
+      options={labelList}
+      value={label}
+      onChange={handleLabelChange}
+      // open // 常に候補を表示する
+      // disableCloseOnSelect // 候補を選択してもリストが閉じないようにする
+      renderInput={(params) => <TextField {...params} label="ラベルを選択" inputProps={{ ...params.inputProps, readOnly: true }}/>}
+      fullWidth
+      />
+    </Row>
   );
 }
 
-export default Labelselect;
+export default LabelSelect;

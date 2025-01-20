@@ -87,6 +87,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
   useEffect(() => {
     if (isVideoStreamReady) {
       // video要素にストリームを設定
+      console.log('video added');
       videoRef.current.srcObject = videoStreamRef.current;
 
       // videoStreamのピクセルサイズを取得

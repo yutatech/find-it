@@ -4,9 +4,10 @@ import logo from "./logo.png"; // ロゴ画像へのパス
 
 const Logo = () => {
   const logoStyle = {
+    zIndex: 100,
     position: "absolute",
-    top: "10px",
-    right: "10px",
+    top: "2vh",
+    right: "2vw",
     width: "100px", // サイズを調整
   };
 

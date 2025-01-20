@@ -4,7 +4,7 @@ import LearningPhasePage from './component/LearningPhase/LearningPhasePage';
 import AddPhoto from './component/LearningPhase/TeacherData/AddPhoto';
 import LabelManagement from './component/LearningPhase/TeacherData/LabelManagement';
 import EditPhoto from './component/LearningPhase/TeacherData/EditPhoto';
-import Labelselect from './component/InferencePhase/Labelselect';
+import Labelselect from './component/InferencePhase/LabelSelect';
 import Camera from './component/InferencePhase/Camera';
 import Logo from "./component/SharedComponents/Logo";
 import Header from './component/SharedComponents/Header';
@@ -41,21 +41,23 @@ function Component() {
 
   return (
     <Router>
-      <Container className="d-flex" style={{ position: "relative", height: `${windowHeight}px`, padding: '0px', paddingTop: '2vh' }}>
-        {/* 常に右上に表示されるロゴ */}
-        <Logo />
-        {/* ルーティング設定 */}
-        <Routes>
-          <Route path="/" element={<LearningPhasePage />} />
-          <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
-          <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
-          <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
-          <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
-          <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
-          <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />
-        </Routes>
-        <Header />
-      </Container>
+      <div className="d-flex justify-content-center">
+        <Container fluid="xl" className="d-flex flex-column" style={{height: `${windowHeight}px`, padding: '0px', position: 'relative'}}>
+          {/* 常に右上に表示されるロゴ */}
+          <Logo />
+          {/* ルーティング設定 */}
+          <Routes>
+            <Route path="/" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
+            <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
+            {/* <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
+            <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} /> */}
+            <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
+            <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
+            <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} />
+          </Routes>
+          <Header />
+        </Container>
+      </div>
     </Router>
   );
 }
