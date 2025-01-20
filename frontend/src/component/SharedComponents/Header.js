@@ -20,11 +20,11 @@ const Header = () => {
   };
 
   return (
-    <Row style={{ height: '4rem', width:'100%', padding: '0', margin: '0'}}>
+    <Row style={{ height: '4rem', width:'100%', padding: '0', margin: '0', zIndex: '100' }}>
       <Button onClick={onFindButton}
         variant='primary'
-        className='d-flex justify-content-center align-items-center'
-        style={{ height: '100%', width: '50%', borderRadius: '0', padding: '0' }}>
+        className='d-flex justify-content-center align-items-center h-100 w-50'
+        style={{ borderRadius: '0', padding: '0' }}>
         <span className={`${isFindPhase ? 'button-symbol-active' : 'button-symbol-inactive'}
                           material-symbols-outlined`}>
           search
@@ -33,8 +33,8 @@ const Header = () => {
       </Button>
       <Button onClick={onSettingsButton}
         variant='primary'
-        className='d-flex justify-content-center align-items-center'
-        style={{ height: '100%', width: '50%', borderRadius: '0', padding: '0' }}>
+        className='d-flex justify-content-center align-items-center h-100 w-50'
+        style={{ borderRadius: '0', padding: '0' }}>
         <span className={`${!isFindPhase ? 'button-symbol-active' : 'button-symbol-inactive'}
                           material-symbols-outlined`}>
           settings

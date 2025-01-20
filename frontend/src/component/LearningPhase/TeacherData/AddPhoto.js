@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, TextField, Select, MenuItem } from '@mui/material';
-import { Row } from 'react-bootstrap';
+import { Row, Container } from 'react-bootstrap';
 
 const AddPhoto = () => {
     const [image, setImage] = useState(null);
@@ -8,11 +8,19 @@ const AddPhoto = () => {
     const [labelList, setLabelList] = useState([]);
     const [useNewLabel, setUseNewLabel] = useState(true);
     const videoRef = useRef(null);
-    
+
 
     useEffect(() => {
-        const storedLabels = JSON.parse(localStorage.getItem('labels')) || [];
-        setLabelList(storedLabels);
+        const apiUrl = process.env.REACT_APP_API_URL;
+        fetch(apiUrl + "/api/v1/items") // FastAPIのエンドポイント
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch items");
+                }
+                return response.json();
+            })
+            .then((data) => setLabelList(data.items))
+            .catch((err) => console.log(err.message));
     }, []);
 
     const handleFileChange = (e) => {
@@ -24,19 +32,6 @@ const AddPhoto = () => {
             };
             reader.readAsDataURL(file);
         }
-    };
-
-    const startCamera = async () => {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        videoRef.current.srcObject = stream;
-    };
-
-    const takePhoto = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
-        saveImage(canvas.toDataURL('image/png'));
     };
 
     const saveImage = (imageData) => {
@@ -60,47 +55,50 @@ const AddPhoto = () => {
     };
 
     return (
-        <Row className="d-flex w-100 flex-grow-1 justify-content-center">
+        <Row className="d-flex w-100 flex-grow-1 justify-content-center"
+            style={{ margin: 0, height: '100vh - 4rem' }}>
+            <Container style={{overflowY: 'auto'}}>
 
-            <h2>ラベルを選択または入力</h2>
-            <Select
-                value={useNewLabel ? '' : label}
-                onChange={(e) => {
-                    setLabel(e.target.value);
-                    setUseNewLabel(false);
-                }}
-                displayEmpty
-                fullWidth
-            >
-                <MenuItem value="" disabled>ラベルを選択</MenuItem>
-                {labelList.map((lbl, index) => (
-                    <MenuItem key={index} value={lbl}>{lbl}</MenuItem>
-                ))}
-            </Select>
+                <h2>ラベルを選択または入力</h2>
+                <Select
+                    value={useNewLabel ? '' : label}
+                    onChange={(e) => {
+                        setLabel(e.target.value);
+                        setUseNewLabel(false);
+                    }}
+                    displayEmpty
+                    fullWidth
+                >
+                    <MenuItem value="" disabled>ラベルを選択</MenuItem>
+                    {labelList.map((lbl, index) => (
+                        <MenuItem key={index} value={lbl}>{lbl}</MenuItem>
+                    ))}
+                </Select>
 
-            <TextField
-                label="新しいラベルを入力"
-                value={useNewLabel ? label : ''}
-                onChange={(e) => {
-                    setLabel(e.target.value);
-                    setUseNewLabel(true);
-                }}
-                fullWidth
-                margin="normal"
-            />
+                <TextField
+                    label="新しいラベルを入力"
+                    value={useNewLabel ? label : ''}
+                    onChange={(e) => {
+                        setLabel(e.target.value);
+                        setUseNewLabel(true);
+                    }}
+                    fullWidth
+                    margin="normal"
+                />
 
-            <input
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                id="fileInput"
-                onChange={handleFileChange}
-            />
-            <label htmlFor="fileInput">
-                <Button component="span" variant="contained">
-                    写真を選択
-                </Button>
-            </label>
+                <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="fileInput"
+                    onChange={handleFileChange}
+                />
+                <label htmlFor="fileInput">
+                    <Button component="span" variant="contained">
+                        写真を選択
+                    </Button>
+                </label>
+            </Container>
         </Row>
     );
 };

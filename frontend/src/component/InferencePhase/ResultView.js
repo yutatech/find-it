@@ -80,13 +80,14 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       height = videoParentRect.height;
     }
 
-    if (width > window.innerWidth) {
-      height = window.innerWidth * height / width;
-      width = window.innerWidth;
+    if (width > videoParentRect.width) {
+      height = videoParentRect.width * height / width;
+      width = videoParentRect.width;
     }
-    if (height > window.innerHeight) {
-      width = window.innerHeight * width / height;
-      height = window.innerHeight;
+  
+    if (height > videoParentRect.height) {
+      width = videoParentRect.height * width / height;
+      height = videoParentRect.height;
     }
 
     canvasSizeRef.current = { width: width, height: height };

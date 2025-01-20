@@ -63,7 +63,8 @@ const EditPhoto = () => {
     }, {});
 
     return (
-        <Row className="d-flex w-100 flex-grow-1 justify-content-center">
+        <Row className="d-flex w-100 flex-grow-1 justify-content-center"
+                style={{margin: 0}}>
             
             <h1>画像編集</h1>
 
