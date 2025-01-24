@@ -6,9 +6,9 @@ const Logo = () => {
   const logoStyle = {
     zIndex: 100,
     position: "absolute",
-    top: "2vh",
+    top: "0.5vh",
     right: "2vw",
-    width: "100px", // サイズを調整
+    height: "3.8rem", // サイズを調整
   };
 
   return <img src={logo} alt="Find It Logo" style={logoStyle} />;
