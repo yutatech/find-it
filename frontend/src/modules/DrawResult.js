@@ -5,19 +5,37 @@
  */
 export default function DrawResult(canvasContext, result) {
   const ctx = canvasContext;
-  let fillStyle = "";
-  let textStyle = "";
-  if (result.label === 'person') {
-    fillStyle = "rgba(255, 0, 0, 0.5)";
-    textStyle = "rgba(255, 0, 0, 1)";
-  }
-  else {
-    fillStyle = "rgba(0, 255, 0, 0.5)";
-    textStyle = "rgba(0, 255, 0, 1)";
-  }
-  ctx.fillStyle = fillStyle;
-  ctx.fillRect(result.box[0], result.box[1], result.box[2], result.box[3]);
-  ctx.fillStyle = textStyle;
-  ctx.font = "15px Arial";
-  ctx.fillText(result.label, result.box[0], result.box[1] + 15);
+
+  const x = result.center_x;
+  const y = result.center_y;
+  const radiusX = result.width / 2;
+  const radiusY = result.height / 2;
+
+  ctx.shadowColor = 'rgb(255, 255, 255)';
+  ctx.shadowBlur = 25; // 影のぼかし量
+  ctx.shadowOffsetX = 0; // 影の水平オフセット
+  ctx.shadowOffsetY = 0; // 影の垂直オフセット
+
+  // 影付き楕円の描画
+  ctx.beginPath();
+  ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+  ctx.ellipse(x,y, radiusX + 2, radiusY + 2, 0, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.strokeStyle = 'rgb(255, 255, 255)'; // 楕円の枠線の色
+  ctx.lineWidth = 5;
+  ctx.stroke();
+
+
+  // 背景透過部分の楕円の描画
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.fillStyle = 'rgba(0, 0, 0, 1)'; // 透明領域の設定
+  ctx.shadowColor = 'transparent';
+
+  ctx.beginPath();
+  ctx.ellipse(x, y, radiusX, radiusY, 0, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.lineWidth = 0;
+  ctx.stroke();
+
+  ctx.globalCompositeOperation = 'source-over';
 }

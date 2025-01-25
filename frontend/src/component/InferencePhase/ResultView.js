@@ -27,15 +27,13 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     return copy;
   }
 
-  function lowPassFilter(previous, current, alpha_cord = 0.8, alpha_size = 0.5) {
+  function lowPassFilter(previous, current, alpha_cord = 0.8, alpha_size = 0.2) {
     return {
       label: current.label,
-      box: [
-        previous.box[0] * (1 - alpha_cord) + current.box[0] * alpha_cord,
-        previous.box[1] * (1 - alpha_cord) + current.box[1] * alpha_cord,
-        previous.box[2] * (1 - alpha_size) + current.box[2] * alpha_size,
-        previous.box[3] * (1 - alpha_size) + current.box[3] * alpha_size
-      ]
+      center_x: previous.center_x * (1 - alpha_cord) + current.center_x * alpha_cord,
+      center_y: previous.center_y * (1 - alpha_cord) + current.center_y * alpha_cord,
+      width: previous.width * (1 - alpha_size) + current.width * alpha_size,
+      height: previous.height * (1 - alpha_size) + current.height * alpha_size
     };
   }
 
@@ -50,11 +48,17 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       // Try to find a matching label with similar position in the previous data
       for (let i = 0; i < prvTrackedResults.length; i++) {
         if (prvTrackedResults[i].label === item.label &&
-          Math.abs(prvTrackedResults[i].box[0] - item.box[0]) < threshold &&
-          Math.abs(prvTrackedResults[i].box[1] - item.box[1]) < threshold) {
+          Math.abs(prvTrackedResults[i].center_x - item.center_x) < threshold &&
+          Math.abs(prvTrackedResults[i].center_y - item.center_y) < threshold) {
+
+          const delta = Math.sqrt(Math.abs(prvTrackedResults[i].width - item.width) ** 2 + Math.abs(prvTrackedResults[i].height - item.height) ** 2);
+          console.log(delta);
+          let alpha = delta / 20;
+          alpha = alpha > 0.8 ? 0.8 : alpha;
+          alpha = alpha < 0.2 ? 0.2 : alpha;
 
           // Apply low-pass filter to position and size
-          trackedResult.push(lowPassFilter(prvTrackedResults[i], item));
+          trackedResult.push(lowPassFilter(prvTrackedResults[i], item, alpha));
           matched = true;
           break;
         }
@@ -76,11 +80,14 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     if (result && canvas) {
       const ctx = canvas.getContext("2d");
       const imageSize = { width: result.image_size.width, height: result.image_size.height };
-      const scale = canvas.width / canvasSizeRef.current.width;
 
-      // videoSizeを最大値とするような座標系で描画できるようにスケールを調整
-      ctx.setTransform(scale, 0, 0, scale, 0, 0);
       ctx.clearRect(0, 0, canvasSizeRef.current.width, canvasSizeRef.current.height);
+
+      // 全体を薄く黒に
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // 映像を転送するときにリサイズしている場合があるので、その分を補正
       const imgToCanvasScale = canvasSizeRef.current.width / imageSize.width;
@@ -92,13 +99,15 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
       result.results.forEach((result) => {
         let result_copy = deepCopy(result);
-        result_copy.box[0] *= imgToCanvasScale;
-        result_copy.box[1] *= imgToCanvasScale;
-        result_copy.box[2] *= imgToCanvasScale;
-        result_copy.box[3] *= imgToCanvasScale;
+        result_copy.center_x *= imgToCanvasScale;
+        result_copy.center_y *= imgToCanvasScale;
+        result_copy.width *= imgToCanvasScale;
+        result_copy.height *= imgToCanvasScale;
 
-        result_copy.box[0] += displacecmet.x;
-        result_copy.box[1] += displacecmet.y;
+        result_copy.center_x += displacecmet.x;
+        result_copy.center_y += displacecmet.y;
+        result_copy.width *= 1.2;
+        result_copy.height *= 1.2;
         scaledResults.push(result_copy);
       });
 
