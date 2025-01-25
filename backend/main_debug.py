@@ -31,29 +31,40 @@ def get_host_name():
     print(f"https://{hostname}:3000")
     return hostname
 
+
 if __name__ == "__main__":
     hostname = get_host_name()
     server = FastApiServer(
-        allow_origins=["https://localhost:8000", "https://localhost:3000", f"https://{hostname}:8000", f"https://{hostname}:3000"]
+        allow_origins=[
+            "https://localhost:8000",
+            "https://localhost:3000",
+            f"https://{hostname}:8000",
+            f"https://{hostname}:3000",
+        ]
     )
-    
+
     session_controller = SessionController()
-    
+
     socket_server = SocketServer(
         session_controller=session_controller,
-        allow_origins=["https://localhost:8000", "https://localhost:3000", f"https://{hostname}:8000", f"https://{hostname}:3000"]
+        allow_origins=[
+            "https://localhost:8000",
+            "https://localhost:3000",
+            f"https://{hostname}:8000",
+            f"https://{hostname}:3000",
+        ],
     )
     socket_server.set_handlers(server.app)
 
     web_rtc_server = WebRtcServer()
     web_rtc_server.set_handlers(socket_server.sio)
-    
+
     api = Api(session_controller)
     api.set_handlers(server.app)
 
     vision_processor = VisionProcessor(session_controller)
     web_rtc_server.set_on_frame_received(vision_processor.on_frame_received)
-    
+
     frontend_server = FrontendServer()
     frontend_server.set_handlers(server.app)
 
