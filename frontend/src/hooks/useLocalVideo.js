@@ -13,7 +13,6 @@ const useLocalVideo = () => {
     // カメラの取得
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false, signal: signalRef.current })
       .then((stream) => {
-        console.log('success to get media:', isLocalStreamReady, mounted);
         if (mounted) {
           localStreamRef.current = stream;
           setIsLocalStreamReady(true);
@@ -24,7 +23,6 @@ const useLocalVideo = () => {
       });
 
     return () => {
-      console.log("umount");
       mounted = false;
       controllerRef.current.abort();
       if (localStreamRef.current) {

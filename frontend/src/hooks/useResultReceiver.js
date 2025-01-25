@@ -12,7 +12,6 @@ const useResultReceiver = () => {
   };
 
   const setSocketHandlers = () => {
-    console.log('setSocketHandlers');
     socketRef.current.on("result", (result) => {
       handleResult(result);
     });
