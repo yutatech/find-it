@@ -1,18 +1,27 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "find it",
+  "name": "find it",
   "icons": [
     {
+      "purpose": "any",
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
+      "purpose": "any",
       "src": "logo192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
+      "purpose": "any",
+      "src": "apple-touch-icon-180.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    },
+    {
+      "purpose": "any",
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512"
