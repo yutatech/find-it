@@ -109,6 +109,11 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
     if (isLocalStreamReady) {
       setupWebRtc();
     }
+    return () => {
+      if (peerConnection.current) {
+        peerConnection.current.close();
+      }
+    }
   }, [isLocalStreamReady]);
 
   return { isConnected, setupWebRtc, startTimeRef };
