@@ -3,7 +3,8 @@ from modules.socket_server import SocketServer
 from modules.web_rtc_server import WebRtcServer
 from modules.vision_processor import VisionProcessor
 from modules.frontend_server import FrontendServer
-from modules.database import DataBase
+from modules.api import Api
+from modules.session_controller import SessionController
 import socket
 import platform
 import subprocess
@@ -35,7 +36,11 @@ if __name__ == "__main__":
     server = FastApiServer(
         allow_origins=["https://localhost:8000", "https://localhost:3000", f"https://{hostname}:8000", f"https://{hostname}:3000"]
     )
+    
+    session_controller = SessionController()
+    
     socket_server = SocketServer(
+        session_controller=session_controller,
         allow_origins=["https://localhost:8000", "https://localhost:3000", f"https://{hostname}:8000", f"https://{hostname}:3000"]
     )
     socket_server.set_handlers(server.app)
@@ -43,10 +48,10 @@ if __name__ == "__main__":
     web_rtc_server = WebRtcServer()
     web_rtc_server.set_handlers(socket_server.sio)
     
-    database = DataBase()
-    database.set_handlers(server.app)
+    api = Api(session_controller)
+    api.set_handlers(server.app)
 
-    vision_processor = VisionProcessor(database)
+    vision_processor = VisionProcessor(session_controller)
     web_rtc_server.set_on_frame_received(vision_processor.on_frame_received)
     
     frontend_server = FrontendServer()

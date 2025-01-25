@@ -3,7 +3,7 @@ from modules.socket_server import SocketServer
 from modules.web_rtc_server import WebRtcServer
 from modules.vision_processor import VisionProcessor
 from modules.frontend_server import FrontendServer
-from modules.database import DataBase
+from backend.modules.api import DataBase
 
 if __name__ == "__main__":
     server = FastApiServer()
