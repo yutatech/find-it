@@ -1,72 +1,10 @@
-import React, { useState, useEffect, useContext, use } from "react";
+import { useContext } from "react";
 import { Autocomplete, TextField } from '@mui/material';
 import { Row } from "react-bootstrap";
-import { SocketRefContext } from "../../modules/SocketRefContext";
+import { LabelContext } from "../../modules/LabelContext";
 
 function LabelSelect() {
-  const socketRef = useContext(SocketRefContext);
-  const [label, setLabel] = useState('');
-  const [labelList, setLabelList] = useState([]);
-  const apiUrl = process.env.REACT_APP_API_URL;
-
-  function setTargetLabel(label) {
-    setLabel(label);
-    localStorage.setItem('target_label', label);
-
-    fetch(apiUrl + `/api/v1/set_target_label?target_label=${encodeURIComponent(label)}`, // FastAPIのエンドポイント
-      {
-        headers: {
-          'sid': socketRef.current.id
-        },
-      })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to set set_target_label");
-        }
-      })
-      .catch((err) => console.log(err.message));
-  }
-
-  socketRef.current.on('connect', () => {
-    // labelListが取得済みの場合は何もしない
-    if (labelList.length > 0) {
-      return;
-    }
-
-    // itemsの取得
-    fetch(apiUrl + "/api/v1/items", // FastAPIのエンドポイント
-      {
-        headers: {
-          'sid': socketRef.current.id
-        }
-      })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch items");
-        }
-        return response.json();
-      })
-      .then((data) => setLabelList(data.items))
-      .catch((err) => console.log(err.message));
-  });
-
-  useEffect(() => {
-    if (labelList.length === 0) {
-      return;
-    }
-
-    // LabelListが取得できたら、target_labelを取得
-    const targetLabel = localStorage.getItem('target_label');
-
-    if (labelList.includes(targetLabel)) {
-      setTargetLabel(targetLabel);
-    }
-    else {
-      setTargetLabel(labelList[0]);
-    }
-  }, [labelList]);
-
-
+  const { label, labelList, setTargetLabel } = useContext(LabelContext);
 
   // ラベルを選択したときの処理
   const handleLabelChange = (event, newValue) => {
