@@ -107,8 +107,6 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       trackedResult.forEach((result) => {
         DrawResult(ctx, result);
       });
-      ctx.strokeStyle = "gray";
-      ctx.strokeRect(10, 10, canvasSizeRef.current.width - 20, canvasSizeRef.current.height - 20);
     }
     window.requestAnimationFrame(drawResult);
   };
