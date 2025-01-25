@@ -177,7 +177,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
   };
 
   return (
-    <div ref={frameRef}>
+    <div ref={frameRef} height="100%" width="100%">
       {/* Video */}
       <video
         ref={videoRef}
