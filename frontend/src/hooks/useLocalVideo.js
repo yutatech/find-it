@@ -15,10 +15,12 @@ const useLocalVideo = () => {
       .then((stream) => {
         if (mounted) {
           localStreamRef.current = stream;
-          setIsLocalStreamReady(true);
-
-          const settings = stream.getVideoTracks()[0].getSettings();
-          console.log('localStream settings:', settings.width, settings.height);
+          setTimeout(() => {
+            setIsLocalStreamReady(true);
+  
+            const settings = stream.getVideoTracks()[0].getSettings();
+            console.log('localStream settings:', settings.width, settings.height);
+          }, 1000);
         }
       })
       .catch((error) => {
