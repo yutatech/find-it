@@ -30,7 +30,7 @@ function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
       <Row className="d-flex w-100 justify-content-start" style={{ zIndex: 2, position: 'absolute', margin: '0' }}>
         <LabelSelect />
       </Row>
-      <Row className='d-flex w-100 h-100 justify-content-center align-items-end' style={{ zIndex: 1, padding: 0, margin: '0' }}>
+      <Row className='d-flex w-100 h-100 justify-content-center align-items-center' style={{ zIndex: 1, padding: 0, margin: '0', position: 'relative', overflow: 'hidden' }}>
         <ResultView
           isVideoStreamReady={isStreamReady}
           videoStreamRef={streamRef}

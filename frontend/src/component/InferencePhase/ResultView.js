@@ -15,15 +15,15 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     if (obj === null || typeof obj !== "object") {
       return obj; // プリミティブ型やnullはそのまま返す
     }
-  
+
     const copy = Array.isArray(obj) ? [] : {};
-  
+
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         copy[key] = deepCopy(obj[key]); // 再帰的にコピー
       }
     }
-  
+
     return copy;
   }
 
@@ -38,7 +38,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       ]
     };
   }
-  
+
   const prvTrackedResultsRef = useRef([]);
   // Process the time series data
   function processObjectsData(data, threshold = 200) {
@@ -49,24 +49,24 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       let matched = false;
       // Try to find a matching label with similar position in the previous data
       for (let i = 0; i < prvTrackedResults.length; i++) {
-        if (prvTrackedResults[i].label === item.label && 
-            Math.abs(prvTrackedResults[i].box[0] - item.box[0]) < threshold && 
-            Math.abs(prvTrackedResults[i].box[1] - item.box[1]) < threshold) {
-          
+        if (prvTrackedResults[i].label === item.label &&
+          Math.abs(prvTrackedResults[i].box[0] - item.box[0]) < threshold &&
+          Math.abs(prvTrackedResults[i].box[1] - item.box[1]) < threshold) {
+
           // Apply low-pass filter to position and size
           trackedResult.push(lowPassFilter(prvTrackedResults[i], item));
           matched = true;
           break;
         }
       }
-  
+
       if (!matched) {
         trackedResult.push(item);
       }
     });
-    
+
     prvTrackedResultsRef.current = trackedResult;
-  
+
     return trackedResult;
   }
 
@@ -124,19 +124,16 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
     const videoParentRect = frameRef.current.parentElement.getBoundingClientRect();
 
-    if (height < videoParentRect.height) {
-      width = width * videoParentRect.height / height;
+    const heightRatio = videoParentRect.height / height;
+    const widthRatio = videoParentRect.width / width;
+
+    if (heightRatio > widthRatio) {
+      width = width * heightRatio;
       height = videoParentRect.height;
     }
-
-    if (width > videoParentRect.width) {
-      height = videoParentRect.width * height / width;
+    else {
+      height = height * widthRatio;
       width = videoParentRect.width;
-    }
-
-    if (height > videoParentRect.height) {
-      width = videoParentRect.height * width / height;
-      height = videoParentRect.height;
     }
 
     canvasSizeRef.current = { width: width, height: height };
@@ -165,17 +162,24 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
     // リスナーを登録
     window.addEventListener("resize", handleCanvasResize);
+    window.addEventListener("orientationchange", handleCanvasResize);
 
     // クリーンアップ: リスナーを削除
     return () => {
       window.removeEventListener("resize", handleCanvasResize);
+      window.removeEventListener("orientationchange", handleCanvasResize);
       window.cancelAnimationFrame(drawResult);
       resultRef.current = null;
     };
   }, []);
 
+  const innerStyle = {
+    position: "absolute", top: '50%', left: '50%',
+    transform: 'translate(-50%, -50%)', pointerEvents: "none"
+  };
+
   return (
-    <div ref={frameRef} style={{ position: "relative", width: `${canvasSize.width}px`, height: `${canvasSize.height}px`, padding: 0 }}>
+    <div ref={frameRef}>
       {/* Video */}
       <video
         ref={videoRef}
@@ -184,7 +188,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
         muted
         width={canvasSize.width}
         height={canvasSize.height}
-        style={{ position: "absolute", top: 0, left: 0 }}
+        style={innerStyle}
       />
       {/* Canvas */}
       <canvas
@@ -192,13 +196,13 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
         ref={canvasRef}
         width={canvasSize.width}
         height={canvasSize.height}
-        style={{ position: "relative", top: 0, left: 0, pointerEvents: "none" }}
+        style={innerStyle}
       />
       <canvas
         id="canvasDebugOut"
         width={canvasSize.width}
         height={canvasSize.height}
-        style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
+        style={innerStyle}
       />
     </div>
   );
