@@ -72,8 +72,8 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
   const drawResult = () => {
     const result = resultRef.current;
-    if (result) {
-      const canvas = canvasRef.current;
+    const canvas = canvasRef.current;
+    if (result && canvas) {
       const ctx = canvas.getContext("2d");
       const imageSize = { width: result.image_size.width, height: result.image_size.height };
       const scale = canvas.width / canvasSizeRef.current.width;
@@ -169,6 +169,8 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     // クリーンアップ: リスナーを削除
     return () => {
       window.removeEventListener("resize", handleCanvasResize);
+      window.cancelAnimationFrame(drawResult);
+      resultRef.current = null;
     };
   }, []);
 

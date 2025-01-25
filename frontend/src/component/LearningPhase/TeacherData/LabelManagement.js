@@ -1,22 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem } from '@mui/material';
-import { Row, Col } from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
+import { LabelContext } from '../../../modules/LabelContext';
 import './SettingsStyle.css';
 
 
 const LabelManagement = () => {
-    const [labels, setLabels] = useState([]);
     const [newLabel, setNewLabel] = useState('');
     const [editLabel, setEditLabel] = useState('');
     const [selectedLabel, setSelectedLabel] = useState('');
     const [open, setOpen] = useState(false);
-    
-
-    // ラベル一覧の読み込み
-    useEffect(() => {
-        const storedLabels = JSON.parse(localStorage.getItem('labels')) || [];
-        setLabels(storedLabels);
-    }, []);
+    const { labelList, setLabelList } = useContext(LabelContext);
 
     // ラベルの追加
     const handleAddLabel = () => {
@@ -24,13 +18,12 @@ const LabelManagement = () => {
             alert('ラベル名を入力してください。');
             return;
         }
-        if (labels.includes(newLabel)) {
+        if (labelList.includes(newLabel)) {
             alert('このラベルはすでに存在します。');
             return;
         }
-        const updatedLabels = [...labels, newLabel];
-        localStorage.setItem('labels', JSON.stringify(updatedLabels));
-        setLabels(updatedLabels);
+        const updatedLabels = [...labelList, newLabel];
+        setLabelList(updatedLabels);
         setNewLabel('');
         alert('ラベルを追加しました。');
     };
@@ -48,11 +41,10 @@ const LabelManagement = () => {
             alert('ラベル名を入力してください。');
             return;
         }
-        const updatedLabels = labels.map((lbl) =>
+        const updatedLabels = labelList.map((lbl) =>
             lbl === selectedLabel ? editLabel : lbl
         );
-        localStorage.setItem('labels', JSON.stringify(updatedLabels));
-        setLabels(updatedLabels);
+        setLabelList(updatedLabels);
         setOpen(false);
         alert('ラベルを更新しました。');
     };
@@ -60,9 +52,8 @@ const LabelManagement = () => {
     // ラベルの削除
     const handleDeleteLabel = (label) => {
         if (window.confirm(`「${label}」を削除しますか？`)) {
-            const updatedLabels = labels.filter((lbl) => lbl !== label);
-            localStorage.setItem('labels', JSON.stringify(updatedLabels));
-            setLabels(updatedLabels);
+            const updatedLabels = labelList.filter((lbl) => lbl !== label);
+            setLabelList(updatedLabels);
             alert('ラベルを削除しました。');
         }
     };
@@ -84,23 +75,24 @@ const LabelManagement = () => {
                 ラベルを追加
             </Button>
 
-            <h2>ラベル一覧</h2>
-            {labels.length === 0 ? (
+            <h2 style={{marginTop: '0.5rem'}}>ラベル一覧</h2>
+            {labelList.length === 0 ? (
                 <p>ラベルがありません。</p>
             ) : (
-                labels.map((label, index) => (
+                labelList.map((label, index) => (
                     <div key={index} style={{ margin: '10px 0' }}>
                         <Button
                             variant="outlined"
                             onClick={() => handleEditClick(label)}
-                            style={{ marginRight: 10 }}
+                            style={{ marginRight: 10, width: '65%' }}
                         >
                             {label}
                         </Button>
                         <Button
                             variant="contained"
                             color="secondary"
-                            onClick={() => handleDeleteLabel(label)}
+                            onClick={() => {handleDeleteLabel(label);}}
+                            style={{ width: '30%' }}
                         >
                             削除
                         </Button>

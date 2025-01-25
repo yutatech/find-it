@@ -1,10 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LearningPhasePage from './component/LearningPhase/LearningPhasePage';
-import AddPhoto from './component/LearningPhase/TeacherData/AddPhoto';
-import LabelManagement from './component/LearningPhase/TeacherData/LabelManagement';
-import EditPhoto from './component/LearningPhase/TeacherData/EditPhoto';
-import Labelselect from './component/InferencePhase/LabelSelect';
 import Camera from './component/InferencePhase/Camera';
 import Logo from "./component/SharedComponents/Logo";
 import Header from './component/SharedComponents/Header';
@@ -12,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col } from "react-bootstrap";
 
 import { SocketRefProvider } from './modules/SocketRefContext';
+import { LabelProvider } from './modules/LabelContext';
 import useLocalVideo from './hooks/useLocalVideo';
 import useWebRtc from './hooks/useWebRtc';
 import { useState, useEffect } from 'react';
@@ -20,15 +17,16 @@ import { useState, useEffect } from 'react';
 function Component() {
   const { localStreamRef, isLocalStreamReady } = useLocalVideo();
   const { startTimeRef } = useWebRtc(localStreamRef, isLocalStreamReady);
-  const [windowHeight, setWindowHeight] = useState(0);
+  const [windowHeight, setWindowHeight] = useState(500);
   const [viewHight, setViewHight] = useState(0);
 
+  const updateWindowHeight = () => {
+    setWindowHeight(window.innerHeight);  // 現在のウィンドウ高さを設定
+    const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize); // 1remのピクセル値
+    setViewHight(window.innerHeight - 4 * remSize);  // 現在のウィンドウ高さからヘッダーの高さを引いたものを設定
+  };
+
   useEffect(() => {
-    const updateWindowHeight = () => {
-      setWindowHeight(window.innerHeight);  // 現在のウィンドウ高さを設定
-      const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize); // 1remのピクセル値
-      setViewHight(window.innerHeight - 4 * remSize);  // 現在のウィンドウ高さからヘッダーの高さを引いたものを設定
-    };
 
     // 初回実行
     updateWindowHeight();
@@ -53,11 +51,6 @@ function Component() {
             <Routes>
               <Route path="/" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
               <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
-              {/* <Route path="/InferencePhasePage/labelselect" element={<Labelselect />} />
-              <Route path="/InferencePhasePage/camera" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} /> */}
-              {/* <Route path="/LearningPhasePage/addphoto" element={<AddPhoto />} />
-              <Route path="/LearningPhasePage/labelmanagement" element={<LabelManagement />} />
-              <Route path="/LearningPhasePage/editphoto" element={<EditPhoto />} /> */}
             </Routes>
           </Row>
           <Header />
@@ -72,7 +65,9 @@ function App() {
     <>
       {/* Socket通信のインスタンスを全体で共有 */}
       <SocketRefProvider>
-        <Component />
+        <LabelProvider>
+          <Component />
+        </LabelProvider>
       </SocketRefProvider>
     </>
   );
