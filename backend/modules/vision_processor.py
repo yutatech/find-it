@@ -8,11 +8,13 @@ class VisionProcessor:
         self.counter = 0
         # self.model = torch.hub.load("ultralytics/yolov8", "yolov8")
         self.model = YOLO("find_it_model.pt")
-        print('load model complete')
-        data_base.labels = [i for i in self.model.names.values()]
-        print(data_base.labels)
-        
-    
+        self.set_log_level_for_all(logging.ERROR)
+        print("load model complete")
+    def set_log_level_for_all(self, level):
+        for logger_name, logger_instance in logging.root.manager.loggerDict.items():
+            if isinstance(logger_instance, logging.Logger):  # Loggerインスタンスのみ対象
+                logger_instance.setLevel(level)
+
     def on_frame_received(self, sid, frame):
         self.counter += 1
         
