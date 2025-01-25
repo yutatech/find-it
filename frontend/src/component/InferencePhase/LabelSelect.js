@@ -12,7 +12,6 @@ function LabelSelect() {
   function setTargetLabel(label) {
     setLabel(label);
     localStorage.setItem('target_label', label);
-    console.log('setTargetLabel:', label);
 
     fetch(apiUrl + `/api/v1/set_target_label?target_label=${encodeURIComponent(label)}`, // FastAPIのエンドポイント
       {
@@ -58,7 +57,6 @@ function LabelSelect() {
 
     // LabelListが取得できたら、target_labelを取得
     const targetLabel = localStorage.getItem('target_label');
-    console.log('targetLabel:', targetLabel);
 
     if (labelList.includes(targetLabel)) {
       setTargetLabel(targetLabel);

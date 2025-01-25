@@ -9,7 +9,6 @@ export const SocketRefProvider = ({ children }) => {
   socketRef.current = io(process.env.REACT_APP_API_URL, {
     transports: ['websocket', 'polling']
   });
-  console.log('socketRef:', socketRef.current);
 
   return (
     <SocketRefContext.Provider value={socketRef}>

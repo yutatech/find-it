@@ -39,12 +39,10 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
     playingRef.current = true;
     startOptFlow();
     window.requestAnimationFrame(onUpdate);
-    console.log("opt flow start");
   };
 
   const stop = () => {
     playingRef.current = false;
-    console.log("opt flow stop");
   };
 
   const onUpdate = () => {
@@ -81,7 +79,6 @@ const useOpticalFlow = (videoStreamRef, isVideoStreamReady) => {
 
     const videoTrack = videoStreamRef.current.getVideoTracks()[0];
     const settings = videoTrack.getSettings();
-    console.log(settings.width, settings.height);
 
     video.height = settings.height / downScale;
     video.width = settings.width / downScale;
