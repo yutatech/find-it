@@ -52,7 +52,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
           Math.abs(prvTrackedResults[i].center_y - item.center_y) < threshold) {
 
           const delta = Math.sqrt(Math.abs(prvTrackedResults[i].width - item.width) ** 2 + Math.abs(prvTrackedResults[i].height - item.height) ** 2);
-          let alpha = delta / 20;
+          let alpha = delta / (threshold/20);
           alpha = alpha > 0.8 ? 0.8 : alpha;
           alpha = alpha < 0.2 ? 0.2 : alpha;
 
@@ -110,7 +110,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
         scaledResults.push(result_copy);
       });
 
-      const trackedResult = processObjectsData(scaledResults);
+      const trackedResult = processObjectsData(scaledResults, canvasSizeRef.current.width / 10);
 
       trackedResult.forEach((result) => {
         DrawResult(ctx, result);
