@@ -13,10 +13,13 @@ import useLocalVideo from './hooks/useLocalVideo';
 import useWebRtc from './hooks/useWebRtc';
 import { useState, useEffect } from 'react';
 
+import "./App.css";
+
 
 function Component() {
+  const [loading, setLoading] = useState(true);
   const { localStreamRef, isLocalStreamReady } = useLocalVideo();
-  const { startTimeRef } = useWebRtc(localStreamRef, isLocalStreamReady);
+  const { isConnected, startTimeRef } = useWebRtc(localStreamRef, isLocalStreamReady);
   const [windowHeight, setWindowHeight] = useState(500);
   const [viewHight, setViewHight] = useState(0);
 
@@ -27,7 +30,6 @@ function Component() {
   };
 
   useEffect(() => {
-
     // 初回実行
     updateWindowHeight();
 
@@ -40,21 +42,36 @@ function Component() {
     };
   }, []);
 
+  useEffect(() => {
+    // ローディング画面を非表示にする
+    if (isLocalStreamReady && isConnected) {
+      setLoading(false);
+    }
+  }, [isLocalStreamReady, isConnected]);
+
   return (
     <Router>
-      <div className="d-flex justify-content-center">
-        <Container fluid="xl" className="d-flex flex-column" style={{ height: `${windowHeight}`, padding: '0px', position: 'relative' }}>
-          {/* 常に右上に表示されるロゴ */}
-          <Logo />
-          <Row className="d-flex w-100 flex-column flex-grow-1 " style={{ padding: 0, margin: 0, height: `${viewHight}px` }}>
-            {/* ルーティング設定 */}
-            <Routes>
-              <Route path="/" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
-              <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
-            </Routes>
-          </Row>
-          <Header />
-        </Container>
+      <div className={`App ${loading ? "" : "loader-hidden"}`}>
+        {/* ロゴとローディング画面 */}
+        <div className="loader-container">
+          <div className="loader-logo"></div>
+        </div>
+        {/* メイン画面 */}
+        <div className="d-flex justify-content-center app-content">
+          <Container fluid="xl" className="d-flex flex-column" style={{ height: `${windowHeight}`, padding: '0px', position: 'relative' }}>
+            {/* 常に右上に表示されるロゴ */}
+            <Logo />
+            <Row className="d-flex w-100 flex-column flex-grow-1 " style={{ padding: 0, margin: 0, height: `${viewHight}px` }}>
+              {/* ルーティング設定 */}
+              <Routes>
+                <Route path="/" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
+                <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
+              </Routes>
+            </Row>
+            <Header />
+          </Container>
+        </div>
+
       </div>
     </Router>
   );
