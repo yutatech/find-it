@@ -1,0 +1,14 @@
+.logo{
+  z-index: 100;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  height: calc((1.375rem + 1.5vw) * 1.5);
+}
+@media (min-width:1200px){
+  .logo{
+    height: 3.75rem;
+    top: 0.35rem;
+    right: 0.5rem;
+  }
+}
