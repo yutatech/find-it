@@ -47,7 +47,11 @@ class VisionProcessor:
             if name == target_label:
                 x1, y1, x2, y2 = [int(i) for i in box.xyxy[0]]
                 # print(name, x1, y1, x2, y2)
-                result_dict.append({"label": name, "box": [x1, y1, x2 - x1, y2 - y1]})
+                result_dict.append({"label": name, 
+                                    "center_x": (x1 + x2)/2,
+                                    "center_y": (y1 + y2)/2,
+                                    "width": x2 - x1,
+                                    "height": y2 - y1})
 
         return {
             "timestamp": frame.time,
