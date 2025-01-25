@@ -52,7 +52,6 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
           Math.abs(prvTrackedResults[i].center_y - item.center_y) < threshold) {
 
           const delta = Math.sqrt(Math.abs(prvTrackedResults[i].width - item.width) ** 2 + Math.abs(prvTrackedResults[i].height - item.height) ** 2);
-          console.log(delta);
           let alpha = delta / 20;
           alpha = alpha > 0.8 ? 0.8 : alpha;
           alpha = alpha < 0.2 ? 0.2 : alpha;
@@ -128,6 +127,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     // Windowに収まるようにcanvasSizeを調整
     let width = videoSizeRef.current.width;
     let height = videoSizeRef.current.height;
+    console.log("width", width, height);
 
     const videoParentRect = frameRef.current.parentElement.getBoundingClientRect();
 
@@ -145,6 +145,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
     canvasSizeRef.current = { width: width, height: height };
     setCanvasSize({ width: width, height: height });
+    console.log("handleCanvasResize", width, height);
   };
 
   useEffect(() => {
@@ -153,9 +154,8 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       videoRef.current.srcObject = videoStreamRef.current;
 
       // videoStreamのピクセルサイズを取得
-      const videoTrack = videoStreamRef.current.getVideoTracks()[0];
-      const settings = videoTrack.getSettings();
-      videoSizeRef.current = { width: settings.width, height: settings.height };
+      console.log("videoSize", videoStreamRef.current.getVideoTracks()[0].getSettings().width, videoStreamRef.current.getVideoTracks()[0].getSettings().height);
+      videoSizeRef.current = { width: videoStreamRef.current.getVideoTracks()[0].getSettings().width, height: videoStreamRef.current.getVideoTracks()[0].getSettings().height };
 
       handleCanvasResize();
       window.requestAnimationFrame(drawResult);
@@ -169,12 +169,10 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
     // リスナーを登録
     window.addEventListener("resize", handleCanvasResize);
-    window.addEventListener("orientationchange", handleCanvasResize);
 
     // クリーンアップ: リスナーを削除
     return () => {
       window.removeEventListener("resize", handleCanvasResize);
-      window.removeEventListener("orientationchange", handleCanvasResize);
       window.cancelAnimationFrame(drawResult);
       resultRef.current = null;
     };
