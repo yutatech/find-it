@@ -5,13 +5,14 @@ import { SocketRefContext } from "../../modules/SocketRefContext";
 
 function LabelSelect() {
   const socketRef = useContext(SocketRefContext);
-  const [selectedLabel] = useState(null);
   const [label, setLabel] = useState('');
   const [labelList, setLabelList] = useState([]);
   const apiUrl = process.env.REACT_APP_API_URL;
 
   function setTargetLabel(label) {
     setLabel(label);
+    localStorage.setItem('target_label', label);
+    console.log('setTargetLabel:', label);
 
     fetch(apiUrl + `/api/v1/set_target_label?target_label=${encodeURIComponent(label)}`, // FastAPIのエンドポイント
       {
@@ -27,7 +28,12 @@ function LabelSelect() {
       .catch((err) => console.log(err.message));
   }
 
-  useEffect(() => {
+  socketRef.current.on('connect', () => {
+    // labelListが取得済みの場合は何もしない
+    if (labelList.length > 0) {
+      return;
+    }
+
     // itemsの取得
     fetch(apiUrl + "/api/v1/items", // FastAPIのエンドポイント
       {
@@ -43,33 +49,23 @@ function LabelSelect() {
       })
       .then((data) => setLabelList(data.items))
       .catch((err) => console.log(err.message));
-  }, []);
+  });
 
   useEffect(() => {
+    if (labelList.length === 0) {
+      return;
+    }
+
     // LabelListが取得できたら、target_labelを取得
-    fetch(apiUrl + "/api/v1/get_target_label", // FastAPIのエンドポイント
-      {
-        headers: {
-          'sid': socketRef.current.id
-        }
-      })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch items");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.target_label !== null) {
-          setLabel(data.target_label);
-        }
-        else {
-          console.log('labelList:', labelList);
-          setLabel(labelList[0]);
-        }
-        console.log('target_label:', data.target_label);
-      })
-      .catch((err) => console.log(err.message));
+    const targetLabel = localStorage.getItem('target_label');
+    console.log('targetLabel:', targetLabel);
+
+    if (labelList.includes(targetLabel)) {
+      setTargetLabel(targetLabel);
+    }
+    else {
+      setTargetLabel(labelList[0]);
+    }
   }, [labelList]);
 
 
