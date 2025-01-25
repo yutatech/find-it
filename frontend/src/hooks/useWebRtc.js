@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { SocketRefContext } from "../modules/SocketRefContext";
 
 const useWebRtc = (localStreamRef, isLocalStreamReady) => {
-  const socketRef = useContext(SocketRefContext);
+  const {socketRef, isSocketReady} = useContext(SocketRefContext);
   const [isConnected, setIsConnected] = useState(false);
   const peerConnection = useRef(null);
   const offerRef = useRef(null);
@@ -14,13 +14,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
     await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
   };
 
-  const handleIce = async (ice) => {
-    console.log('Adding ICE candidate:', ice);
-    await peerConnection.current.addIceCandidate(new RTCIceCandidate(ice.candidate));
-  };
-
   const setSocketHandlers = () => {
-    console.log('setSocketHandlers2');
     socketRef.current.on('disconnect', () => {
       console.log('Disconnected from server');
       setIsConnected(false);
@@ -30,10 +24,6 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
     socketRef.current.on('answer', (data) => {
       console.log('Received answer:', data);
       handleAnswer(data);
-    });
-
-    socketRef.current.on('ice', (data) => {
-      handleIce(data);
     });
   };
 
@@ -45,27 +35,23 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
       ]
     });
 
-    // ICE Candidateの送信
-    peerConnection.current.onicecandidate = (event) => {
-      if (event.candidate) {
-        socketRef.current.emit('ice_candidate', event.candidate);
-      }
-    };
-
     peerConnection.current.oniceconnectionstatechange = (event) => {
-      console.log('oniceconnectionstatechange:', event);
+      console.log('ICE connection state change:', event.target.iceConnectionState);
     };
     peerConnection.current.onsignalingstatechange = (event) => {
-      console.log('onsignalingstatechange:', event);
+      console.log('Signaling state change:', event.target.signalingState);
     };
     peerConnection.current.onconnectionstatechange = (event) => {
-      console.log('onconnectionstatechange:', event);
+      console.log('Connection state change:', event.target.connectionState);
       if (event.target.connectionState === 'connected') {
         setIsConnected(true);
       }
       else if (event.target.connectionState === 'disconnected') {
         setIsConnected(false);
       }
+    };
+    peerConnection.current.onicegatheringstatechange = (event) => {
+      console.log('ICEgathering state change:', event.target.iceGatheringState);
     };
 
     // LocalのTrackをWebRTC接続に追加
@@ -106,7 +92,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
   };
 
   useEffect(() => {
-    if (isLocalStreamReady) {
+    if (isLocalStreamReady, isSocketReady) {
       setupWebRtc();
     }
     return () => {
@@ -114,7 +100,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
         peerConnection.current.close();
       }
     }
-  }, [isLocalStreamReady]);
+  }, [isLocalStreamReady, isSocketReady]);
 
   return { isConnected, setupWebRtc, startTimeRef };
 };

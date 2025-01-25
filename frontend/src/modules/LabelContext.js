@@ -8,7 +8,7 @@ export const LabelProvider = ({ children }) => {
   const [label, setLabel] = useState(null);
 
   const apiUrl = process.env.REACT_APP_API_URL;
-  const socketRef = useContext(SocketRefContext);
+  const {socketRef} = useContext(SocketRefContext);
 
   socketRef.current.on('connect', () => {
     // labelListが取得済みの場合は何もしない
