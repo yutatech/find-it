@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { SocketRefContext } from "../modules/SocketRefContext";
 
 const useWebRtc = (localStreamRef, isLocalStreamReady) => {
-  const socketRef = useContext(SocketRefContext);
+  const {socketRef, isSocketReady} = useContext(SocketRefContext);
   const [isConnected, setIsConnected] = useState(false);
   const peerConnection = useRef(null);
   const offerRef = useRef(null);
@@ -106,7 +106,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
   };
 
   useEffect(() => {
-    if (isLocalStreamReady) {
+    if (isLocalStreamReady, isSocketReady) {
       setupWebRtc();
     }
     return () => {
@@ -114,7 +114,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
         peerConnection.current.close();
       }
     }
-  }, [isLocalStreamReady]);
+  }, [isLocalStreamReady, isSocketReady]);
 
   return { isConnected, setupWebRtc, startTimeRef };
 };
