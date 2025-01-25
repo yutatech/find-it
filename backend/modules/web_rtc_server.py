@@ -21,11 +21,6 @@ class WebRtcServer:
             answer = await self.sio_handle_offer(sid, offer)
             await sio.emit("answer", answer, to=sid)
 
-        @sio.on("ice_candidate")
-        async def on_ice(sid, ice: dict):
-            print('on_ice')
-            await self.sio_handle_ice(sid, ice)
-
     async def sio_handle_offer(self, sid, offer: dict):
         pc = RTCPeerConnection(configuration=RTCConfiguration(
             iceServers=[RTCIceServer(urls="stun:stun.l.google.com:19302")]))
@@ -33,27 +28,18 @@ class WebRtcServer:
         @pc.on("signalingstatechange")
         async def on_signalingstatechange():
             print('Signaling state change:', pc.signalingState)
-            if pc.signalingState == 'stable':
-                print('ICE gathering complete')
 
         @pc.on('iceconnectionstatechange')
         async def on_iceconnectionstatechange():
             print("ICE connection state is", pc.iceConnectionState)
-            if pc.iceConnectionState == "failed":
-                print("ICE Connection has failed, attempting to restart ICE")
-                # await pc.restartIce()
 
         @pc.on('connectionstatechange')
         async def on_connectionstatechange():
             print('Connection state change:', pc.connectionState)
-            if pc.connectionState == 'connected':
-                print('Peers successfully connected')
 
         @pc.on('icegatheringstatechange')
         async def on_icegatheringstatechange():
             print('ICE gathering state changed to', pc.iceGatheringState)
-            if pc.iceGatheringState == 'complete':
-                print('All ICE candidates have been gathered.')
 
         @pc.on("track")
         async def handle_track(track: RemoteStreamTrack):
@@ -73,13 +59,6 @@ class WebRtcServer:
             "type": pc.localDescription.type,
             "sdp": pc.localDescription.sdp,
         }
-
-    async def sio_handle_ice(self, sid, ice: dict):
-        await self.sio.emit("ice_candidate", ice, to=sid)
-
-    async def pc_handle_icecandidate(self, sid, pc: RTCPeerConnection,
-                                     candidate: RTCIceCandidate):
-        await self.sio.emit("ice", candidate, to=sid)
 
     async def pc_handle_track(self, sid, pc: RTCPeerConnection,
                                 track: RemoteStreamTrack):
