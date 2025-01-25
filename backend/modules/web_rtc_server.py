@@ -40,6 +40,10 @@ class WebRtcServer:
         @pc.on('icegatheringstatechange')
         async def on_icegatheringstatechange():
             print('ICE gathering state changed to', pc.iceGatheringState)
+            for recv in pc.getReceivers():
+                for ice in recv.transport.transport.iceGatherer.getLocalCandidates():
+                    print("ip:", ice.ip, " port:", ice.port, " relatedPort:", ice.relatedPort, " relatedAddress:", ice.relatedAddress)
+
 
         @pc.on("track")
         async def handle_track(track: RemoteStreamTrack):
