@@ -56,3 +56,9 @@ npm start
 3. Not Foudと表示されればOK
 4. `https://hostname.local:3000`にアクセス
 5. 2.と同様に警告を突破してアクセスする
+
+## License
+
+This project includes code from [OpenCV.js](https://github.com/opencv/opencv), which is licensed under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+The `opencv.js` file is either directly obtained from the official OpenCV distribution or built from source. For more details, see [OpenCV's license](https://github.com/opencv/opencv/blob/master/LICENSE).
