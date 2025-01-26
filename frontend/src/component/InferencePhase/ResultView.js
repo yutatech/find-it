@@ -129,7 +129,6 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
     // Windowに収まるようにcanvasSizeを調整
     let width = videoSizeRef.current.width;
     let height = videoSizeRef.current.height;
-    console.log("width", width, height);
 
     const videoParentRect = frameRef.current.parentElement.getBoundingClientRect();
 
@@ -147,7 +146,6 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
     canvasSizeRef.current = { width: width, height: height };
     setCanvasSize({ width: width, height: height });
-    console.log("handleCanvasResize", width, height);
   };
 
   useEffect(() => {
@@ -156,8 +154,8 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       videoRef.current.srcObject = videoStreamRef.current;
 
       // videoStreamのピクセルサイズを取得
-      console.log("videoSize", videoStreamRef.current.getVideoTracks()[0].getSettings().width, videoStreamRef.current.getVideoTracks()[0].getSettings().height);
-      videoSizeRef.current = { width: videoStreamRef.current.getVideoTracks()[0].getSettings().width, height: videoStreamRef.current.getVideoTracks()[0].getSettings().height };
+      const settings = videoStreamRef.current.getVideoTracks()[0].getSettings();
+      videoSizeRef.current = { width: settings.width, height: settings.height };
 
       handleCanvasResize();
       window.requestAnimationFrame(drawResult);

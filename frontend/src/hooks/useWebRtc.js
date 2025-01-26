@@ -85,7 +85,7 @@ const useWebRtc = (localStreamRef, isLocalStreamReady) => {
 
   const setupWebRtc = async () => {
     if (isLocalStreamReady) {
-      console.log('localStreamRef:', localStreamRef.current);
+      console.log('Setup WebRTC');
       await setSocketHandlers();
       await createPeerConnection();
     }
