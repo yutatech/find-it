@@ -1,10 +1,11 @@
 # WebRTC client
-## HTTPS化
-`../server/README.md`を参照してserver側の.pemファイルを生成してください。
-この手順は必須です。
+## SSL通信
+- `find-it/backend/README.md`を参照してbackend側の.pemファイルを生成してください。
+- この手順は必須です。
 
 ## setup
 ```sh
+cd find-it/frontend
 npm install
 ```
 
@@ -18,13 +19,12 @@ To address all issues (including breaking changes), run:
 Run `npm audit` for details.
 ```
 
-## プログラムの書き換え
-App.jsの5行目、`server_url`の`yuta-air.local`の部分を自分のPCの`hostname.local`に書き換える
-
 ## 起動
 ```sh
 npm start
 ```
+
+- これで`localhost:3000`にfronendのサーバーが起動する。
 
 ## iOSからアクセスする
 ### サーバー端末のポート解放
@@ -42,9 +42,15 @@ npm start
 - Windows
   - [【PC】クライアントPCの「ホスト名(コンピューター名)」を変更したい](https://faq01-fb.fujifilm.com/faq/show/85529?site_domain=default)などを参考に調べる
 - macOS
-  - ターミナルを開いた時に出ている文字の`username@hostname:~$`みたいな文字列のhostnameの部分がホスト名
+  - `scutil --get LocalHostName`の結果がhostname
+
+### mDNSサーバーの設定
+- DNSサーバーが存在しないLAN内でもhostname.localで名前解決できるのは、各端末が自身のhostnameとIP Addressの紐付けをLAN内全体にmulticastしているから。この機能を mDNS (multicast DNS)という。各端末にmDNSのサーバーを立てておく必要がある。
+- WSLではサーバーをインストールする必要があるかも。詳しくは[こちらを参照のこと](https://zenn.dev/dozo/articles/e16d29e89eadbf)。
+
 ### iOSのブラウザからアクセス
-「サーバー側端末のホスト名を調べる」で分かったホスト名をhostnameを表します。
+- 手元の環境では、初期状態ではfrontendからbackendへのアクセスが拒否されるので、ブラウザから直接backendに一回接続してブラウザが通信を拒否しないようにする必要がある。
+- 「サーバー側端末のホスト名を調べる」で分かったホスト名をhostnameを表します。
 1. `https://hostname.local:8000`にアクセス
 2. 「接続はプライベートではありません」みたいな文言が表示されるので、詳細を表示 > このWebサイトを閲覧　をクリック
 3. Not Foudと表示されればOK
