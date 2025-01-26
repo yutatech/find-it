@@ -1,4 +1,4 @@
-# WebRTC Server
+# find-it backend
 
 ## スクリプトについて
 - main.py

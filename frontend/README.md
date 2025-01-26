@@ -1,4 +1,4 @@
-# WebRTC client
+# find-it frontend
 ## SSL通信
 - `find-it/backend/README.md`を参照してbackend側の.pemファイルを生成してください。
 - この手順は必須です。
