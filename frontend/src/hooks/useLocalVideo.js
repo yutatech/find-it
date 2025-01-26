@@ -15,7 +15,10 @@ const useLocalVideo = () => {
       .then((stream) => {
         if (mounted) {
           localStreamRef.current = stream;
-          setIsLocalStreamReady(true);
+          setTimeout(() => {
+            // 1秒待機してからIsReadyを発火しないと、settingsが正しく取得できない
+            setIsLocalStreamReady(true);
+          }, 1000);
         }
       })
       .catch((error) => {

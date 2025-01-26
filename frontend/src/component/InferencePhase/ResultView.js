@@ -52,8 +52,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
           Math.abs(prvTrackedResults[i].center_y - item.center_y) < threshold) {
 
           const delta = Math.sqrt(Math.abs(prvTrackedResults[i].width - item.width) ** 2 + Math.abs(prvTrackedResults[i].height - item.height) ** 2);
-          console.log(delta);
-          let alpha = delta / 20;
+          let alpha = delta / (threshold / 20);
           alpha = alpha > 0.8 ? 0.8 : alpha;
           alpha = alpha < 0.2 ? 0.2 : alpha;
 
@@ -75,12 +74,9 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
   }
 
   const drawResult = () => {
-    const result = resultRef.current;
     const canvas = canvasRef.current;
-    if (result && canvas) {
+    if (canvas) {
       const ctx = canvas.getContext("2d");
-      const imageSize = { width: result.image_size.width, height: result.image_size.height };
-
       ctx.clearRect(0, 0, canvasSizeRef.current.width, canvasSizeRef.current.height);
 
       // 全体を薄く黒に
@@ -89,33 +85,38 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // 映像を転送するときにリサイズしている場合があるので、その分を補正
-      const imgToCanvasScale = canvasSizeRef.current.width / imageSize.width;
+      const result = resultRef.current;
+      if (result) {
+        const imageSize = { width: result.image_size.width, height: result.image_size.height };
 
-      const frameTime = new Date(streamStartTimeRef.current.getTime() + result.timestamp * 1000);
-      const displacecmet = calcDisplacementFromTime(frameTime);
+        // 映像を転送するときにリサイズしている場合があるので、その分を補正
+        const imgToCanvasScale = canvas.width / imageSize.width;
 
-      let scaledResults = []
+        const frameTime = new Date(streamStartTimeRef.current.getTime() + result.timestamp * 1000);
+        const displacecmet = calcDisplacementFromTime(frameTime);
 
-      result.results.forEach((result) => {
-        let result_copy = deepCopy(result);
-        result_copy.center_x *= imgToCanvasScale;
-        result_copy.center_y *= imgToCanvasScale;
-        result_copy.width *= imgToCanvasScale;
-        result_copy.height *= imgToCanvasScale;
+        let scaledResults = []
 
-        result_copy.center_x += displacecmet.x;
-        result_copy.center_y += displacecmet.y;
-        result_copy.width *= 1.2;
-        result_copy.height *= 1.2;
-        scaledResults.push(result_copy);
-      });
+        result.results.forEach((result) => {
+          let result_copy = deepCopy(result);
+          result_copy.center_x *= imgToCanvasScale;
+          result_copy.center_y *= imgToCanvasScale;
+          result_copy.width *= imgToCanvasScale;
+          result_copy.height *= imgToCanvasScale;
 
-      const trackedResult = processObjectsData(scaledResults);
+          result_copy.center_x += displacecmet.x;
+          result_copy.center_y += displacecmet.y;
+          result_copy.width *= 1.2;
+          result_copy.height *= 1.2;
+          scaledResults.push(result_copy);
+        });
 
-      trackedResult.forEach((result) => {
-        DrawResult(ctx, result);
-      });
+        const trackedResult = processObjectsData(scaledResults, canvasSizeRef.current.width / 10);
+
+        trackedResult.forEach((result) => {
+          DrawResult(ctx, result);
+        });
+      }
     }
     window.requestAnimationFrame(drawResult);
   };
@@ -153,8 +154,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       videoRef.current.srcObject = videoStreamRef.current;
 
       // videoStreamのピクセルサイズを取得
-      const videoTrack = videoStreamRef.current.getVideoTracks()[0];
-      const settings = videoTrack.getSettings();
+      const settings = videoStreamRef.current.getVideoTracks()[0].getSettings();
       videoSizeRef.current = { width: settings.width, height: settings.height };
 
       handleCanvasResize();
@@ -169,12 +169,10 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
     // リスナーを登録
     window.addEventListener("resize", handleCanvasResize);
-    window.addEventListener("orientationchange", handleCanvasResize);
 
     // クリーンアップ: リスナーを削除
     return () => {
       window.removeEventListener("resize", handleCanvasResize);
-      window.removeEventListener("orientationchange", handleCanvasResize);
       window.cancelAnimationFrame(drawResult);
       resultRef.current = null;
     };
