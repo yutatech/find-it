@@ -3,6 +3,34 @@ import { Autocomplete, TextField } from '@mui/material';
 import { Row } from "react-bootstrap";
 import { LabelContext } from "../../modules/LabelContext";
 
+import { styled } from '@mui/material/styles';
+
+const CustomTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'rgba(255, 255, 255, 0.5)',
+    },
+    '&:hover fieldset': {
+      borderColor: 'rgba(255, 255, 255, 0.8)',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: 'rgba(255, 255, 255, 1)',
+    },
+  },
+  '& .MuiInputBase-input': {
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
+  '& .MuiInputBase-input.Mui-focused': {
+    color: 'rgba(255, 255, 255, 1)',
+  },
+  '& .MuiInputLabel-root': {
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: 'rgba(255, 255, 255, 1)',
+  },
+}));
+
 function LabelSelect() {
   const { label, labelList, setTargetLabel } = useContext(LabelContext);
 
@@ -21,7 +49,7 @@ function LabelSelect() {
         onChange={handleLabelChange}
         // open // 常に候補を表示する
         // disableCloseOnSelect // 候補を選択してもリストが閉じないようにする
-        renderInput={(params) => <TextField {...params} label="ラベルを選択" inputProps={{ ...params.inputProps, readOnly: true }} />}
+        renderInput={(params) => <CustomTextField {...params} label="ラベルを選択" inputProps={{ ...params.inputProps, readOnly: true }} />}
         fullWidth
       />
     </Row>
