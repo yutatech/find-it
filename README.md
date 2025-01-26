@@ -61,7 +61,9 @@ cd find-it
 ## Directories
 - frontend
   - reactアプリのソースコード
+  - 詳細は[./frontend/README.md](./frontend/README.md)参照のこと
 - backend
   - backendサーバーのpythonスクリプト
+  - 詳細は[./backend/README.md](./backend/README.md)参照のこと
 - sanbox
   - 試行錯誤段階のソースコードを格納する directory
