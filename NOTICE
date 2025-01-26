@@ -1,2 +1,12 @@
+###
 This project uses opencv, which is licensed under the Apache License, Version 2.0.
 The library is used without modification.
+
+
+###
+This project makes use of Material Icons from Google, which are licensed under the Apache License, Version 2.0.
+
+Original Material Icons repository:
+https://github.com/google/material-design-icons
+
+Copyright 2021 Google LLC

@@ -59,6 +59,21 @@ npm start
 
 ## License
 
+---
+
 This project includes code from [OpenCV.js](https://github.com/opencv/opencv), which is licensed under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 The `opencv.js` file is either directly obtained from the official OpenCV distribution or built from source. For more details, see [OpenCV's license](https://github.com/opencv/opencv/blob/master/LICENSE).
+
+---
+
+This project includes material icons from Google, which are licensed under the Apache License, Version 2.0.
+You may obtain a copy of the license at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+and limitations under the License.
+
+---
