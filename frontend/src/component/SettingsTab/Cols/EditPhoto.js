@@ -4,6 +4,8 @@ import {
 } from '@mui/material';
 import { Col } from 'react-bootstrap';
 
+import './SettingsStyle.css';
+
 const EditPhoto = () => {
     const [images, setImages] = useState([]);
     const [labels, setLabels] = useState([]);

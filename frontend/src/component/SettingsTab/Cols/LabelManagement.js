@@ -3,6 +3,8 @@ import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } 
 import { Col } from 'react-bootstrap';
 import { LabelContext } from '../../../modules/LabelContext';
 
+import './SettingsStyle.css';
+
 const LabelManagement = () => {
     const [newLabel, setNewLabel] = useState('');
     const [editLabel, setEditLabel] = useState('');
