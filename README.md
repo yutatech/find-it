@@ -3,11 +3,7 @@
 ## About this app
 このアプリは、カメラを使って探し物をしてくれるAIです。アプリを立ち上げて探しているものを選択すると、カメラの映像から探し物を見つけてくれます。
 - [探し物探索システムの提案.pdf](./doc/探し物探索システムの提案.pdf)
-![](./doc/探し物探索システムの提案.pdf)
-
-
 - [Proposal_of_a_search_system.pdf](./doc/Proposal_of_a_search_system.pdf)
-![](./doc/Proposal_of_a_search_system.pdf)
 
 ## App URL
 [https://find-it.yutatech.jp](https://find-it.yutatech.jp)
