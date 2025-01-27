@@ -144,10 +144,15 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
           scaledResults.push(result_copy);
         });
 
+        let movedPrvTrackedResults = [];
         prvTrackedResultsRef.current.forEach((result) => {
-          result.center_x += displacecmet.x;
-          result.center_y += displacecmet.y;
+          let result_copy = deepCopy(result);
+          result_copy.center_x += displacecmet.x;
+          result_copy.center_y += displacecmet.y;
+          movedPrvTrackedResults.push(result_copy);
         });
+
+        prvTrackedResultsRef.current = movedPrvTrackedResults;
 
         const trackedResult = processObjectsData(scaledResults, canvasSizeRef.current.width / 5);
 
