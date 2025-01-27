@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 # 元のYOLOモデルをロード（事前学習済みのモデル）
-base_model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/runs/detect/yolov8n_finetuned13/weights/best.pt')  # デフォルトYOLOモデル (例: YOLOv8 Nano)
+base_model = YOLO('/home/shingo/find-it/sandbox/YOLOtest/runs/detect/yolov8n_finetuned4/weights/best.pt')  # デフォルトYOLOモデル (例: YOLOv8 Nano)
 
 # 新しいデータセットで追加学習
 results = base_model.train(
@@ -14,7 +14,7 @@ results = base_model.train(
     imgsz=640,  # 画像サイズ
     device='cpu',  # 'cpu' または 'cuda'（GPU使用の場合）
     name='yolov8n_finetuned',  # 結果保存フォルダ名
-    pretrained='/home/shingo/find-it/sandbox/YOLOtest/runs/detect/yolov8n_finetuned13/weights/best.pt',  # 事前学習済みモデルを活用
+    pretrained='/home/shingo/find-it/sandbox/YOLOtest/runs/detect/yolov8n_finetuned4/weights/best.pt',  # 事前学習済みモデルを活用
 )
 
 # 追加学習したモデルを保存
