@@ -1,7 +1,7 @@
 import os
 
-dp_train = r'/mnt/c/Users/shingo/YOLO/glasses5/train/labels' # trainフォルダのパスを指定
-dp_valid = r'/mnt/c/Users/shingo/YOLO/glasses5/valid/labels' # validフォルダのパスを指定
+dp_train = r'~/YOLO/glasses5/train/labels' # trainフォルダのパスを指定
+dp_valid = r'~/YOLO/glasses5/valid/labels' # validフォルダのパスを指定
 
 TrainFiles = [f for f in os.listdir(dp_train)]
 ValidFiles = [f for f in os.listdir(dp_valid)]

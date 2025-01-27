@@ -6,6 +6,11 @@
 ## アプリURL
 [https://find-it.yutatech.jp](https://find-it.yutatech.jp)
 
+## Demo
+<p align="center">
+<img src="./doc/demo.gif" width="300px" />
+</p>
+
 ## 技術
 - YOLO
   - 物体検出にはPythonのYOLOを採用しています。YOLO v8nをベースに追加学習することで探し物に特化した物体検出モデルを作成しました。
@@ -65,5 +70,8 @@ cd find-it
 - backend
   - backendサーバーのpythonスクリプト
   - 詳細は[./backend/README.md](./backend/README.md)参照のこと
+- yolo
+  - 機械学習のためのpythonスクリプト
+  - 詳細は[./yolo/README.md](./yolo/README.md)参照のこと
 - sanbox
   - 試行錯誤段階のソースコードを格納する directory
