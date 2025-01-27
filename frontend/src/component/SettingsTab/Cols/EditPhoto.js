@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Button, Select, MenuItem, TextField, Dialog, DialogActions, DialogContent, DialogTitle
 } from '@mui/material';
-import { Row, Col } from 'react-bootstrap';
-import './SettingsStyle.css';
+import { Col } from 'react-bootstrap';
 
 const EditPhoto = () => {
     const [images, setImages] = useState([]);

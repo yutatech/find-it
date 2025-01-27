@@ -1,9 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem } from '@mui/material';
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { Col } from 'react-bootstrap';
 import { LabelContext } from '../../../modules/LabelContext';
-import './SettingsStyle.css';
-
 
 const LabelManagement = () => {
     const [newLabel, setNewLabel] = useState('');

@@ -53,12 +53,10 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       let matched = false;
       // Try to find a matching label with similar position in the previous data
       for (let i = 0; i < prvTrackedResults.length; i++) {
-        if (prvTrackedResults[i].label === item.label &&
-          Math.abs(prvTrackedResults[i].center_x - item.center_x) < threshold &&
-          Math.abs(prvTrackedResults[i].center_y - item.center_y) < threshold) {
+        const delta = Math.sqrt(Math.abs(prvTrackedResults[i].width - item.width) ** 2 + Math.abs(prvTrackedResults[i].height - item.height) ** 2);
+        if (prvTrackedResults[i].label === item.label && delta < threshold) {
 
-          const delta = Math.sqrt(Math.abs(prvTrackedResults[i].width - item.width) ** 2 + Math.abs(prvTrackedResults[i].height - item.height) ** 2);
-          let alpha = delta / (threshold / 20);
+          let alpha = delta / (threshold / 40);
           alpha = alpha > 0.8 ? 0.8 : alpha;
           alpha = alpha < 0.2 ? 0.2 : alpha;
 
@@ -87,7 +85,7 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
       else if (!item.matched && item.dissappearedTime === null) {
         if (item.appearedTime !== null) {
           const deltaTime = (new Date() - item.appearedTime) / 1000;
-          if (deltaTime > thresholdTime) { 
+          if (deltaTime > thresholdTime) {
             item.dissappearedTime = new Date();
             trackedResult.push(item);
           }
@@ -144,10 +142,15 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
           scaledResults.push(result_copy);
         });
 
+        let movedPrvTrackedResults = [];
         prvTrackedResultsRef.current.forEach((result) => {
-          result.center_x += displacecmet.x;
-          result.center_y += displacecmet.y;
+          let result_copy = deepCopy(result);
+          result_copy.center_x += displacecmet.x;
+          result_copy.center_y += displacecmet.y;
+          movedPrvTrackedResults.push(result_copy);
         });
+
+        prvTrackedResultsRef.current = movedPrvTrackedResults;
 
         const trackedResult = processObjectsData(scaledResults, canvasSizeRef.current.width / 5);
 

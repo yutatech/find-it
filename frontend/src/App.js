@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LearningPhasePage from './component/LearningPhase/LearningPhasePage';
-import Camera from './component/InferencePhase/Camera';
+import { Container, Row } from "react-bootstrap";
+
+import SettingsTab from './component/SettingsTab/SettingsTab';
+import FindTab from './component/FindTab/FindTab';
 import Logo from "./component/SharedComponents/Logo";
 import Header from './component/SharedComponents/Header';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col } from "react-bootstrap";
 
 import { SocketRefProvider } from './modules/SocketRefContext';
 import { LabelProvider } from './modules/LabelContext';
 import useLocalVideo from './hooks/useLocalVideo';
 import useWebRtc from './hooks/useWebRtc';
-import { useState, useEffect } from 'react';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 
 
@@ -64,8 +64,8 @@ function Component() {
             <Row className="d-flex w-100 flex-column flex-grow-1 " style={{ padding: 0, margin: 0, height: `${viewHight}px` }}>
               {/* ルーティング設定 */}
               <Routes>
-                <Route path="/" element={<Camera streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
-                <Route path="/LearningPhasePage" element={<LearningPhasePage />} />
+                <Route path="/" element={<FindTab streamRef={localStreamRef} isStreamReady={isLocalStreamReady} streamStartTimeRef={startTimeRef} />} />
+                <Route path="/settings" element={<SettingsTab />} />
               </Routes>
             </Row>
             <Header />
