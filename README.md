@@ -1,9 +1,11 @@
 # find-it
 
-## このアプリについて
+## About this app
 このアプリは、カメラを使って探し物をしてくれるAIです。アプリを立ち上げて探しているものを選択すると、カメラの映像から探し物を見つけてくれます。
+- [探し物探索システムの提案.pdf](./doc/探し物探索システムの提案.pdf)
+- [Proposal_of_a_search_system.pdf](./doc/Proposal_of_a_search_system.pdf)
 
-## アプリURL
+## App URL
 [https://find-it.yutatech.jp](https://find-it.yutatech.jp)
 
 ## Demo
@@ -11,7 +13,7 @@
 <img src="./doc/demo.gif" width="300px" />
 </p>
 
-## 技術
+## Technologies
 - YOLO
   - 物体検出にはPythonのYOLOを採用しています。YOLO v8nをベースに追加学習することで探し物に特化した物体検出モデルを作成しました。
 - WebRTC
@@ -40,7 +42,7 @@ cd find-it
 ./run.sh
 ```
 
-## スクリプトについて
+## About scripts
 - `build.sh`
   - frontendをビルドして静的ファイルを生成する。成果物をbackendディレクトリにコピーして、backendからwebアプリを提供できるようにします。成果物はgitignoreされています。
 - `run.sh`
@@ -54,15 +56,6 @@ cd find-it
     - ローカルでWEBアプリの英的ファイルを生成し、サーバーにコピー
     - サーバーでアプリを起動し、ssh終了
 
-## Contributors
-- Fujiyama Yuta / 藤山優太
-- Koizumi Momoko / 小泉桃子
-- Yamamoto Hinako / 山本陽奈子
-- Koizumi Jigen / 小泉慈元
-- Kitamura Shingo / 北村晨悟
-- Ishii Ryotaro / 石井崚太郎
-- Ishii Ryohei / 石井遼平
-
 ## Directories
 - frontend
   - reactアプリのソースコード
@@ -75,3 +68,12 @@ cd find-it
   - 詳細は[./yolo/README.md](./yolo/README.md)参照のこと
 - sanbox
   - 試行錯誤段階のソースコードを格納する directory
+
+## Contributors
+- Fujiyama Yuta / 藤山優太
+- Koizumi Momoko / 小泉桃子
+- Yamamoto Hinako / 山本陽奈子
+- Koizumi Jigen / 小泉慈元
+- Kitamura Shingo / 北村晨悟
+- Ishii Ryotaro / 石井崚太郎
+- Ishii Ryohei / 石井遼平
