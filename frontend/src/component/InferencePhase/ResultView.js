@@ -29,7 +29,8 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
 
   function lowPassFilter(previous, current, alpha_cord = 0.8, alpha_size = 0.2) {
     return {
-      label: current.label,
+      // label: current.label,
+      ...previous,
       center_x: previous.center_x * (1 - alpha_cord) + current.center_x * alpha_cord,
       center_y: previous.center_y * (1 - alpha_cord) + current.center_y * alpha_cord,
       width: previous.width * (1 - alpha_size) + current.width * alpha_size,
@@ -42,6 +43,11 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
   function processObjectsData(data, threshold = 200) {
     let trackedResult = [];  // Final output list
     const prvTrackedResults = prvTrackedResultsRef.current;
+
+    prvTrackedResults.forEach((item, index) => {
+      item.matched = false;
+    });
+
     // Iterate through the data
     data.forEach((item, index) => {
       let matched = false;
@@ -59,12 +65,39 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
           // Apply low-pass filter to position and size
           trackedResult.push(lowPassFilter(prvTrackedResults[i], item, alpha));
           matched = true;
+          prvTrackedResults[i].matched = true;
           break;
         }
       }
 
       if (!matched) {
+        item.appearedTime = new Date();
+        item.dissappearedTime = null;
         trackedResult.push(item);
+      }
+    });
+
+    const thresholdTime = 0.1; // seconds  thresholdTime秒以上表示されていたら
+    const continueTime = 0.5; // seconds   continueTime秒以上表示し続ける
+
+    prvTrackedResults.forEach((item, index) => {
+      if (item.mattached) {
+        item.dissappearedTime = null;
+      }
+      else if (!item.matched && item.dissappearedTime === null) {
+        if (item.appearedTime !== null) {
+          const deltaTime = (new Date() - item.appearedTime) / 1000;
+          if (deltaTime > thresholdTime) { 
+            item.dissappearedTime = new Date();
+            trackedResult.push(item);
+          }
+        }
+      }
+      else if (!item.matched && item.dissappearedTime !== null) {
+        const deltaTime = (new Date() - item.dissappearedTime) / 1000;
+        if (deltaTime < continueTime) {
+          trackedResult.push(item);
+        }
       }
     });
 
@@ -111,7 +144,12 @@ const ResultView = ({ isVideoStreamReady, videoStreamRef, setOnGetResult, calcDi
           scaledResults.push(result_copy);
         });
 
-        const trackedResult = processObjectsData(scaledResults, canvasSizeRef.current.width / 10);
+        prvTrackedResultsRef.current.forEach((result) => {
+          result.center_x += displacecmet.x;
+          result.center_y += displacecmet.y;
+        });
+
+        const trackedResult = processObjectsData(scaledResults, canvasSizeRef.current.width / 5);
 
         trackedResult.forEach((result) => {
           DrawResult(ctx, result);
