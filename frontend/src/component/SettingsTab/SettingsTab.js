@@ -1,13 +1,13 @@
 import React from 'react';
-import './ButtonStyle.css';  // カスタムCSSをインポート
 import { Container, Row } from 'react-bootstrap';
 
+import AddPhoto from './Cols/AddPhoto';
+import LabelManagement from './Cols/LabelManagement';
+import EditPhoto from './Cols/EditPhoto';
 
-import AddPhoto from './TeacherData/AddPhoto';
-import LabelManagement from './TeacherData/LabelManagement';
-import EditPhoto from './TeacherData/EditPhoto';
+import './ButtonStyle.css';
 
-function LearningPhasePage() {
+function SettingsTab() {
   return (
     <Container fluid="md" className='d-flex h-100 flex-column' style={{ padding: 0, margin: 0 }}>
       <Row className='d-flex w-100' style={{ margin: 0, paddingTop: '1rem', backgroundColor: 'lightgray' }}>
@@ -27,4 +27,4 @@ function LearningPhasePage() {
   );
 }
 
-export default LearningPhasePage;
+export default SettingsTab;

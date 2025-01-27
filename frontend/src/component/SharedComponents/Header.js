@@ -16,7 +16,7 @@ const Header = () => {
 
   const onSettingsButton = () => {
     setIsFindPhase(false);
-    navigate('/LearningPhasePage');
+    navigate('/settings');
   };
 
   return (

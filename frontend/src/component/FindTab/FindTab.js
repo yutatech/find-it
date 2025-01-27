@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Container } from 'react-bootstrap';
 
 
 import ResultView from "./ResultView";
@@ -8,11 +7,7 @@ import LabelSelect from "./LabelSelect";
 import useResultReceiver from "../../hooks/useResultReceiver";
 import useOpticalFlow from "../../hooks/useOpticalFlow";
 
-function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const label = location.state?.label;
-
+function FindTab({ streamRef, isStreamReady, streamStartTimeRef }) {
   const { calcDisplacementFromTime } = useOpticalFlow(streamRef, isStreamReady);
   const { setupResultReceiver, deleteResultReceiver, setOnGetResult } = useResultReceiver();
 
@@ -42,4 +37,4 @@ function Camera({ streamRef, isStreamReady, streamStartTimeRef }) {
   );
 }
 
-export default Camera;
+export default FindTab;

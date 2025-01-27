@@ -1,9 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { Button, TextField, Select, MenuItem } from '@mui/material';
+import { Button, Select, MenuItem } from '@mui/material';
 import { LabelContext } from '../../../modules/LabelContext';
 import { Col } from 'react-bootstrap';
-
-import './SettingsStyle.css';
 
 const AddPhoto = () => {
     const [image, setImage] = useState(null);

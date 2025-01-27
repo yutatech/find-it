@@ -14,12 +14,7 @@ class FrontendServer:
     def set_handlers(self, app: FastAPI):
         # Reactのindex.htmlをルートで返す
         @app.get("/")
-        @app.get("/learningphasepage")
-        @app.get("/inferencephasepage/labelselect")
-        @app.get("/inferencephasepage/camera")
-        @app.get("/learningphasepage/addphoto")
-        @app.get("/learningphasepage/labelmanagement")
-        @app.get("/learningphasepage/editphoto")
+        @app.get("/settings")
         def serve_react():
             return FileResponse("build/index.html")
 
