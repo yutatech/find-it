@@ -7,7 +7,9 @@
 [https://find-it.yutatech.jp](https://find-it.yutatech.jp)
 
 ## Demo
-![](./doc/demo.gif)
+<p align="center">
+<img src="./doc/demo.gif" width="30%" />
+</p>
 
 ## 技術
 - YOLO
