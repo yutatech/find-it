@@ -8,7 +8,7 @@
 
 ## Demo
 <p align="center">
-<img src="./doc/demo.gif" width="30%" />
+<img src="./doc/demo.gif" width="300px" />
 </p>
 
 ## 技術
