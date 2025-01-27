@@ -6,6 +6,9 @@
 ## アプリURL
 [https://find-it.yutatech.jp](https://find-it.yutatech.jp)
 
+## Demo
+![](./doc/demo.gif)
+
 ## 技術
 - YOLO
   - 物体検出にはPythonのYOLOを採用しています。YOLO v8nをベースに追加学習することで探し物に特化した物体検出モデルを作成しました。
