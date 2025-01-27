@@ -1,7 +1,7 @@
 import os
 
-dp_train = r'/mnt/c/Users/shingo/YOLO/phone/test/labels' # trainフォルダのパスを指定
-dp_valid = r'/mnt/c/Users/shingo/YOLO/phone/valid/labels' # validフォルダのパスを指定
+dp_train = r'/mnt/c/Users/shingo/YOLO/glasses5/train/labels' # trainフォルダのパスを指定
+dp_valid = r'/mnt/c/Users/shingo/YOLO/glasses5/test/labels' # validフォルダのパスを指定
 
 TrainFiles = [f for f in os.listdir(dp_train)]
 ValidFiles = [f for f in os.listdir(dp_valid)]
@@ -14,7 +14,7 @@ for f in TrainFiles:
         for l in lines:
             parts = l.split()
             if parts:
-                parts[0] = '3'
+                parts[0] = '1'
             tf.write(' '.join(parts) + '\n')
 
 for f in ValidFiles:
@@ -25,5 +25,5 @@ for f in ValidFiles:
         for l in lines:
             parts = l.split()
             if parts:
-                parts[0] = '3'
+                parts[0] = '1'
             vf.write(' '.join(parts) + '\n')
