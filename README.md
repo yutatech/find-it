@@ -70,5 +70,8 @@ cd find-it
 - backend
   - backendサーバーのpythonスクリプト
   - 詳細は[./backend/README.md](./backend/README.md)参照のこと
+- yolo
+  - 機械学習のためのpythonスクリプト
+  - 詳細は[./yolo/README.md](./yolo/README.md)参照のこと
 - sanbox
   - 試行錯誤段階のソースコードを格納する directory
